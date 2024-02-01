@@ -1,8 +1,18 @@
 import { route } from 'quasar/wrappers'
 import {
- createMemoryHistory, createRouter, createWebHashHistory, createWebHistory
+  createMemoryHistory,
+  createRouter,
+  createWebHashHistory,
+  createWebHistory,
+  NavigationGuardNext,
+  RouteLocationNormalized
 } from 'vue-router'
 import routes from './routes'
+import {
+ ROUTER_INDEX_NAME,
+  ROUTER_TODO_NAME
+} from 'src/constants'
+import { useMainStore } from 'stores/main'
 
 /*
  * If not building with SSR mode, you can
@@ -18,7 +28,7 @@ export default route(function(/* { store, ssrContext } */) {
     ? createMemoryHistory
     : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
 
-  return createRouter({
+  const router = createRouter({
     scrollBehavior: () => ({
       left: 0,
       top: 0
@@ -31,4 +41,25 @@ export default route(function(/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
+
+  router.beforeEach((
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext,
+  ) => {
+    if (to.name === ROUTER_TODO_NAME) {
+      const mainStore = useMainStore()
+      if (typeof mainStore.workingFile === 'undefined') {
+        next({
+          name: ROUTER_INDEX_NAME
+        })
+
+        return
+      }
+    }
+
+    next()
+  })
+
+  return router
 })

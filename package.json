@@ -1,8 +1,8 @@
 {
-  "name": "kdrive",
+  "name": "kdrive-todo",
   "version": "0.0.1",
-  "description": "A kdrive app",
-  "productName": "Kdrive app",
+  "description": "A kDrive todo list app",
+  "productName": "kDrive todo app",
   "author": "loicngr <loicnogier@ik.me>",
   "private": true,
   "scripts": {
@@ -42,7 +42,7 @@
     "typescript": "^4.5.4"
   },
   "engines": {
-    "node": "^18 || ^16 || ^14.19",
+    "node": "^20 || ^18 || ^16",
     "npm": ">= 6.13.4",
     "yarn": ">= 1.21.1"
   }

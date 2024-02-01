@@ -3,7 +3,6 @@ import {
   nextTick,
   ref
 } from 'vue'
-import cloneDeep from 'lodash/fp/cloneDeep'
 import { ContextMenuOption } from 'src/interfaces/contextMenu'
 import { CustomFileStat } from 'src/interfaces/file'
 
@@ -24,15 +23,6 @@ export function useContextMenu(baseContextMenuOptions: ContextMenuOption[]) {
     void nextTick(() => {
       contextMenuShow.value = false
     })
-  }
-
-  function onActionClick (contextMenuOption: ContextMenuOption) {
-    const targetAction = contextMenuOption.value
-    const targetIdentifier = cloneDeep(contextMenuItem.value)
-
-    console.log(targetIdentifier, targetAction)
-
-    closeMenu()
   }
 
   return {

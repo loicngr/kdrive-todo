@@ -3,7 +3,7 @@
     <q-card
       v-for="item in vDirectoryContents"
       :key="item.etag"
-      class="col-3 q-ma-md q-pa-none bg-amber-2 column cursor-pointer"
+      class="col-3 q-ma-md q-pa-none bg-purple-6 column cursor-pointer"
       style="overflow: auto; min-height: 200px; max-height: 200px; min-width: 200px; max-width: 200px;"
       @mouseenter="onMouseEnter($event, item)"
       @mouseleave="onMouseLeave($event)"
@@ -69,7 +69,7 @@
     <q-btn
       fab
       icon="fa fa-refresh"
-      color="primary"
+      color="purple-6"
       @click="refreshDirectoryContents()"
     />
   </q-page-sticky>
@@ -97,11 +97,14 @@ import { ContextMenuOption } from 'src/interfaces/contextMenu'
 import isArrayBuffer from 'lodash/isArrayBuffer'
 import DialogCreateFile from 'components/DialogCreateFile.vue'
 import { useMainStore } from 'stores/main'
+import { useRouter } from 'vue-router'
+import { ROUTER_TODO_NAME } from 'src/constants'
 
 const mainStore = useMainStore()
 const API = mainStore.api
 
 const $q = useQuasar()
+const router = useRouter()
 const directoryContents = ref<CustomFileStat[]>(await API.getDirectoryContents())
 
 const vDirectoryContents = computed(() => {
@@ -142,8 +145,12 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     label: 'Open',
     if: (ctx) => ctx?.isFile ?? false,
     callback: (ctx) => {
-      console.log(ctx)
       closeMenu()
+
+      mainStore.setWorkingFile(ctx?.basename)
+      router.push({
+        name: ROUTER_TODO_NAME
+      })
     }
   },
   {
@@ -190,21 +197,20 @@ async function refreshDirectoryContents(dir?: string) {
 
 function onMouseEnter(e: MouseEvent, item: CustomFileStat) {
   const target = e.target as HTMLElement
-  target.classList.replace('bg-amber-2', 'bg-amber-3')
+  target.classList.replace('bg-purple-6', 'bg-purple-5')
 
   if (typeof contextMenuItem.value !== 'undefined' && contextMenuShow.value) {
     closeMenu()
   }
 
   nextTick(() => {
-    console.log('set context item')
     contextMenuItem.value = item
   })
 }
 
 function onMouseLeave(e: MouseEvent) {
   const target = e.target as HTMLElement
-  target.classList.replace('bg-amber-3', 'bg-amber-2')
+  target.classList.replace('bg-purple-5', 'bg-purple-6')
 
   nextTick(() => {
     if (!contextMenuShow.value) {

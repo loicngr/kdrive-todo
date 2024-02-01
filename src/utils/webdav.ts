@@ -1,6 +1,5 @@
 import type {
   GetFileContentsOptions,
-  LockResponse,
   WebDAVClient
 } from 'webdav'
 import { CustomFileStat } from 'src/interfaces/file'
@@ -21,23 +20,29 @@ export class WebDAVApi {
   async writeInFile(file: string, content: string) {
     const filePath = this.getFilePath(file)
 
-    let lock: LockResponse | undefined
+    // let lock: LockResponse | undefined
 
-    if (await this.client.exists(filePath)) {
-      lock = await this.client.lock(filePath)
-    }
+    // TODO: check why error 500 ?
+    // if (await this.client.exists(filePath)) {
+    //   lock = await this.client.lock(filePath)
+    // }
 
     await this.client.putFileContents(filePath, content)
 
-    if (typeof lock !== 'undefined') {
-      await this.client.unlock(filePath, lock.token)
-    }
+    // if (typeof lock !== 'undefined') {
+    //   await this.client.unlock(filePath, lock.token)
+    // }
   }
 
   async getFileContents(
-    file: string,
+    file?: string,
     format: GetFileContentsOptions['format'] = 'text'
   ) {
+    if (typeof file === 'undefined') {
+      console.error('File is undefined')
+      return
+    }
+
     return await this.client.getFileContents(this.getFilePath(file), {
       format,
     })

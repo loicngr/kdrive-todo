@@ -4,3 +4,11 @@ export interface CustomFileStat extends FileStat {
   _id: string
   isFile: boolean
 }
+
+export interface FileData {
+  title: string
+  content: string
+  status: number
+  createdAt: string
+  updatedAt?: string
+}

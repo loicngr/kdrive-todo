@@ -1,4 +1,4 @@
-# Manage ToDo from Infomaniak kDrive through webdav
+# Manage ToDo list from [Infomaniak kDrive](https://kdrive.infomaniak.com) through webdav
 
 ## Env
 Create `.env.local` file at root and set your variables.

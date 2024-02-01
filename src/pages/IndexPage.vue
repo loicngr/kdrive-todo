@@ -1,5 +1,5 @@
 <template>
-  <q-page class="row items-center justify-evenly bg-amber-1">
+  <q-page class="row items-center justify-evenly">
     <template v-if="typeof client !== 'undefined'">
       <suspense>
         <list-directory-contents />
@@ -7,7 +7,7 @@
         <template #fallback>
           <q-spinner-dots
             size="lg"
-            color="primary"
+            color="purple-6"
           />
         </template>
       </suspense>
@@ -15,7 +15,7 @@
     <template v-else>
       <q-spinner-dots
         size="lg"
-        color="primary"
+        color="purple-6"
       />
     </template>
   </q-page>
