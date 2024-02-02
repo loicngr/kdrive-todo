@@ -143,6 +143,12 @@ module.exports = configure(function (/* ctx */) {
     animations: [],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#sourcefiles
+    sourceFiles: {
+      pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+      pwaServiceWorker: 'src-pwa/custom-service-worker',
+      pwaManifestFile: 'src-pwa/manifest.json',
+    },
+
     // sourceFiles: {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
@@ -178,15 +184,17 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'generateSW', // or 'injectManifest'
+      swFilename: 'sw.js', // should be .js (as it's the distribution file, not the input file)
       injectPwaMetaTags: true,
-      swFilename: 'sw.js',
       manifestFilename: 'manifest.json',
       useCredentialsForManifestTag: false,
       // useFilenameHashes: true,
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},
       extendManifestJson (json) {
-        json.name = 'kdrive'
+        json.name = 'kDrive Todo'
+        json.short_name = 'kDrive Todo'
+        json.description = 'kDrive Todo App'
       },
       // extendPWACustomSWConf (esbuildConf) {}
     },
