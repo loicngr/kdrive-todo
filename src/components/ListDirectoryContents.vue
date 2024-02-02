@@ -66,24 +66,22 @@
     position="bottom-right"
     :offset="[18, 18]"
   >
-    <q-btn
-      fab
-      icon="fa fa-add"
-      color="purple-6"
+    <add-button
       class="q-mr-md"
       @click="createNewFile()"
     >
-      <q-tooltip>Create a new file</q-tooltip>
-    </q-btn>
+      <template #tooltip>
+        <q-tooltip self="top left" anchor="top left">Create a new file</q-tooltip>
+      </template>
+    </add-button>
 
-    <q-btn
-      fab
-      icon="fa fa-refresh"
-      color="purple-6"
+    <reload-button
       @click="refreshDirectoryContents()"
     >
-      <q-tooltip self="top left" anchor="top left" >Reload directory</q-tooltip>
-    </q-btn>
+      <template #tooltip>
+        <q-tooltip self="top left" anchor="top left">Reload directory</q-tooltip>
+      </template>
+    </reload-button>
   </q-page-sticky>
 </template>
 
@@ -115,12 +113,30 @@ import {
   DEFAULT_TODO,
   ROUTER_TODO_NAME
 } from 'src/constants'
+import ReloadButton from 'components/ReloadButton.vue'
+import { useKeyboardListener } from 'src/composables/keyboardListener'
+import AddButton from 'components/AddButton.vue'
 
 const mainStore = useMainStore()
-const API = mainStore.api
-
 const $q = useQuasar()
 const router = useRouter()
+
+useKeyboardListener({
+  'Control-r': {
+    callback: (e: KeyboardEvent) => {
+      e.preventDefault()
+      void refreshDirectoryContents()
+    }
+  },
+  'Control-a': {
+    callback: (e: KeyboardEvent) => {
+      e.preventDefault()
+      void createNewFile()
+    }
+  }
+})
+
+const API = mainStore.apiOrThrow
 const directoryContents = ref<CustomFileStat[]>(await API.getDirectoryContents())
 
 const vDirectoryContents = computed(() => {

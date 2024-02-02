@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@quasar/extras": "^1.16.9",
+    "@vueuse/core": "^10.7.2",
     "axios": "^1.6.7",
+    "localforage": "^1.10.0",
     "lodash": "^4.17.21",
     "lodash.clonedeep": "^4.5.0",
     "pinia": "^2.0.11",

@@ -32,6 +32,7 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
+      'store',
       'i18n',
       'axios',
     ],
@@ -64,7 +65,7 @@ module.exports = configure(function (/* ctx */) {
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
-      // vueDevtools,
+      vueDevtools: false,
       // vueOptionsAPI: false,
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
@@ -134,7 +135,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify', 'Dialog', 'Loading'],
+      plugins: ['Notify', 'Dialog', 'Loading', 'LocalStorage'],
     },
 
     // animations: 'all', // --- includes all animations
