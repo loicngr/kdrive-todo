@@ -68,10 +68,22 @@
   >
     <q-btn
       fab
+      icon="fa fa-add"
+      color="purple-6"
+      class="q-mr-md"
+      @click="createNewFile()"
+    >
+      <q-tooltip>Create a new file</q-tooltip>
+    </q-btn>
+
+    <q-btn
+      fab
       icon="fa fa-refresh"
       color="purple-6"
       @click="refreshDirectoryContents()"
-    />
+    >
+      <q-tooltip self="top left" anchor="top left" >Reload directory</q-tooltip>
+    </q-btn>
   </q-page-sticky>
 </template>
 
@@ -90,6 +102,7 @@ import { dateTimeFormat } from 'src/utils/date'
 import { CustomFileStat } from 'src/interfaces/file'
 import { useContextMenu } from 'src/composables/contextMenu'
 import {
+  dialogConfirm,
   downloadBlob,
   generateIdFromFile
 } from 'src/utils'
@@ -98,7 +111,10 @@ import isArrayBuffer from 'lodash/isArrayBuffer'
 import DialogCreateFile from 'components/DialogCreateFile.vue'
 import { useMainStore } from 'stores/main'
 import { useRouter } from 'vue-router'
-import { ROUTER_TODO_NAME } from 'src/constants'
+import {
+  DEFAULT_TODO,
+  ROUTER_TODO_NAME
+} from 'src/constants'
 
 const mainStore = useMainStore()
 const API = mainStore.api
@@ -122,22 +138,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     if: (ctx) => typeof ctx === 'undefined',
     callback: () => {
       closeMenu()
-      $q.dialog({
-        component: DialogCreateFile,
-      }).onOk((data: { filename: string }) => {
-        const {
-          filename
-        } = data
-
-        if (filename.trim().length === 0) {
-          return
-        }
-
-        API.writeInFile(filename.concat('.json'), '')
-          .then(() => {
-            refreshDirectoryContents()
-          })
-      })
+      createNewFile()
     }
   },
   {
@@ -165,7 +166,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
       }
 
       Loading.show()
-      API.getFileContents(ctx.filename, 'binary')
+      API.getFileContents(ctx.basename, 'binary')
         .then((data) => {
           if (isArrayBuffer(data)) {
             const blob = new Blob([data], {
@@ -175,6 +176,30 @@ const baseContextMenuOptions: ContextMenuOption[] = [
             Loading.hide()
             downloadBlob(blob, ctx.basename)
           }
+        })
+    }
+  },
+  {
+    value: 'delete',
+    label: 'Delete',
+    if: (ctx) => ctx?.isFile ?? false,
+    callback: (ctx) => {
+      closeMenu()
+
+      if (typeof ctx === 'undefined') {
+        return
+      }
+
+      dialogConfirm('Delete this file ?')
+        .then(() => {
+          Loading.show()
+
+          API.deleteFile(ctx.basename)
+            .finally(() => {
+              Loading.hide()
+
+              void refreshDirectoryContents()
+            })
         })
     }
   }
@@ -193,6 +218,29 @@ async function refreshDirectoryContents(dir?: string) {
   directoryContents.value = await API.getDirectoryContents(dir)
 
   Loading.hide()
+}
+
+function createNewFile() {
+  $q.dialog({
+    component: DialogCreateFile,
+  }).onOk((data: { filename: string }) => {
+    const {
+      filename
+    } = data
+
+    if (filename.trim().length === 0) {
+      return
+    }
+
+    Loading.show()
+    API.writeInFile(filename.concat('.json'), JSON.stringify(DEFAULT_TODO))
+      .then(() => {
+        refreshDirectoryContents()
+      })
+      .finally(() => {
+        Loading.hide()
+      })
+  })
 }
 
 function onMouseEnter(e: MouseEvent, item: CustomFileStat) {

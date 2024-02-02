@@ -11,13 +11,17 @@ export class WebDAVApi {
   ) {
   }
 
+  async isPathExist(path: string, addWorkingDir = false) {
+    return await this.client.exists(addWorkingDir ? this.getFilePath(path) : path)
+  }
+
   async getDirectoryContents(dir?: string) {
     return await this.client.getDirectoryContents(dir ?? this.workingDir, {
       deep: false,
     }) as CustomFileStat[]
   }
 
-  async writeInFile(file: string, content: string) {
+  async writeInFile(file: string, content: string): Promise<boolean> {
     const filePath = this.getFilePath(file)
 
     // let lock: LockResponse | undefined
@@ -27,11 +31,19 @@ export class WebDAVApi {
     //   lock = await this.client.lock(filePath)
     // }
 
-    await this.client.putFileContents(filePath, content)
+    try {
+      return await this.client.putFileContents(filePath, content)
+    } catch (e) {
+      return false
+    }
 
     // if (typeof lock !== 'undefined') {
     //   await this.client.unlock(filePath, lock.token)
     // }
+  }
+
+  async deleteFile(file: string) {
+    return await this.client.deleteFile(this.getFilePath(file))
   }
 
   async getFileContents(

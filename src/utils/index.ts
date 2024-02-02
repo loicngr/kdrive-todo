@@ -30,3 +30,58 @@ export function dialogConfirm (message: string) {
       .onCancel(reject)
   })
 }
+
+export class HandleKeyboardListener {
+  private readonly handledFunction: (e: KeyboardEvent) => void
+
+  constructor(
+    public context?: {
+      [key: string]: {
+        callback: (e: KeyboardEvent) => void
+      }
+    },
+  ) {
+    this.handledFunction = this.handleListenerKeyDown.bind({
+      context,
+    })
+  }
+
+  private handleListenerKeyDown (event: KeyboardEvent) {
+    const ctx = this.context
+
+    if (typeof ctx === 'undefined') {
+      return
+    }
+
+    const isControl = event.ctrlKey
+    const key = event.key
+    let ctxForKeys = ctx[key]
+
+    if (isControl) {
+      ctxForKeys = ctx[`Control-${key}`]
+    }
+
+    if (typeof ctxForKeys === 'undefined') {
+      return
+    }
+
+    ctxForKeys.callback(event)
+  }
+
+  createListenerKeyDown (
+    ref = window,
+  ) {
+    ref.addEventListener('keydown', this.handledFunction, true)
+  }
+
+  removeListenerKeyDown (
+    ref = window,
+  ) {
+    ref.removeEventListener('keydown', this.handledFunction, true)
+  }
+}
+
+
+export function randomTimeId (length = 10) {
+  return Math.floor(Math.random() * Date.now()).toString(length)
+}

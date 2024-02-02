@@ -7,6 +7,7 @@ import { WebDAVApi } from 'src/utils/webdav'
 import { FileData } from 'src/interfaces/file'
 
 interface State {
+  ready: boolean
   client?: WebDAVClient
   workingDir: string
   _workingFile?: string
@@ -18,6 +19,7 @@ export const useMainStore = defineStore({
   id: 'main',
 
   state: (): State => ({
+    ready: false,
     client: undefined,
     workingDir: '/',
     workingFileContent: [],
