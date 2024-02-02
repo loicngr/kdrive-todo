@@ -9,19 +9,32 @@ import {
 } from 'vue-router'
 import routes from './routes'
 import {
- ROUTER_INDEX_NAME,
+  ROUTER_INDEX_NAME,
   ROUTER_TODO_NAME
 } from 'src/constants'
 import { useMainStore } from 'stores/main'
+import { localStorageReady } from 'src/utils/storage'
 
-/*
- * If not building with SSR mode, you can
- * directly export the Router instantiation;
- *
- * The function below can be async too; either use
- * async/await or return a Promise which resolves
- * with the Router instance.
- */
+async function routerBefore (
+  to: RouteLocationNormalized,
+  from: RouteLocationNormalized,
+  next: NavigationGuardNext,
+) {
+  await localStorageReady
+
+  if (to.name === ROUTER_TODO_NAME) {
+    const mainStore = useMainStore()
+    if (typeof mainStore.workingFile === 'undefined') {
+      next({
+        name: ROUTER_INDEX_NAME
+      })
+
+      return
+    }
+  }
+
+  next()
+}
 
 export default route(function(/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
@@ -42,24 +55,7 @@ export default route(function(/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE)
   })
 
-  router.beforeEach((
-    to: RouteLocationNormalized,
-    from: RouteLocationNormalized,
-    next: NavigationGuardNext,
-  ) => {
-    if (to.name === ROUTER_TODO_NAME) {
-      const mainStore = useMainStore()
-      if (typeof mainStore.workingFile === 'undefined') {
-        next({
-          name: ROUTER_INDEX_NAME
-        })
-
-        return
-      }
-    }
-
-    next()
-  })
+  router.beforeEach(routerBefore)
 
   return router
 })

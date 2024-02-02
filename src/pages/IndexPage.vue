@@ -40,29 +40,47 @@ import ListDirectoryContents from 'components/ListDirectoryContents.vue'
 import { useMainStore } from 'stores/main'
 import { storeToRefs } from 'pinia'
 import { Notify } from 'quasar'
+import { useRouter } from 'vue-router'
+import { ROUTER_SETTINGS_NAME } from 'src/constants'
 
+const router = useRouter()
 const mainStore = useMainStore()
-mainStore.connect()
 
 const {
   ready,
   workingDir,
+  api
 } = storeToRefs(mainStore)
 
+function dialogRedirectError () {
+  Notify.create({
+    message: 'Oops',
+    caption: 'Your settings is wrong, or your folder doesn\'t not exist in your kDrive.',
+    color: 'primary',
+    textColor: 'white',
+    timeout: 7000
+  })
+
+  router.push({
+    name: ROUTER_SETTINGS_NAME,
+  })
+}
+
 function reload () {
-  mainStore.api.isPathExist(workingDir.value)
+  mainStore.connect()
+
+  if (typeof api?.value === 'undefined') {
+    dialogRedirectError()
+    return
+  }
+
+  api?.value?.isPathExist(workingDir.value)
     .then((e) => {
       ready.value = e
     })
     .finally(() => {
       if (!ready.value) {
-        Notify.create({
-          message: 'Default folder not found',
-          caption: `Please, create folder with name "${process.env.VUE_KDRIVE_WORKING_DIR}" in your kDrive.`,
-          color: 'purple-7',
-          textColor: 'white',
-          timeout: 7000
-        })
+        dialogRedirectError()
       }
     })
 }

@@ -32,6 +32,7 @@ module.exports = configure(function (/* ctx */) {
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
     boot: [
+      'store',
       'i18n',
       'axios',
     ],
@@ -64,7 +65,7 @@ module.exports = configure(function (/* ctx */) {
 
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       // vueRouterBase,
-      // vueDevtools,
+      vueDevtools: false,
       // vueOptionsAPI: false,
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
@@ -134,7 +135,7 @@ module.exports = configure(function (/* ctx */) {
       // directives: [],
 
       // Quasar plugins
-      plugins: ['Notify', 'Dialog', 'Loading'],
+      plugins: ['Notify', 'Dialog', 'Loading', 'LocalStorage'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -142,6 +143,12 @@ module.exports = configure(function (/* ctx */) {
     animations: [],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#sourcefiles
+    sourceFiles: {
+      pwaRegisterServiceWorker: 'src-pwa/register-service-worker',
+      pwaServiceWorker: 'src-pwa/custom-service-worker',
+      pwaManifestFile: 'src-pwa/manifest.json',
+    },
+
     // sourceFiles: {
     //   rootComponent: 'src/App.vue',
     //   router: 'src/router/index',
@@ -177,15 +184,17 @@ module.exports = configure(function (/* ctx */) {
     // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
     pwa: {
       workboxMode: 'generateSW', // or 'injectManifest'
+      swFilename: 'sw.js', // should be .js (as it's the distribution file, not the input file)
       injectPwaMetaTags: true,
-      swFilename: 'sw.js',
       manifestFilename: 'manifest.json',
       useCredentialsForManifestTag: false,
       // useFilenameHashes: true,
       // extendGenerateSWOptions (cfg) {}
       // extendInjectManifestOptions (cfg) {},
       extendManifestJson (json) {
-        json.name = 'kdrive'
+        json.name = 'kDrive Todo'
+        json.short_name = 'kDrive Todo'
+        json.description = 'kDrive Todo App'
       },
       // extendPWACustomSWConf (esbuildConf) {}
     },

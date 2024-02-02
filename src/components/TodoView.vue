@@ -1,7 +1,7 @@
 <template>
   <template v-if="workingFileContent.length > 0">
     <q-card
-      class="bg-purple-7 col-md-6 col-12"
+      class="bg-primary col-md-6 col-12"
     >
       <q-card-section>
         <q-list
@@ -110,41 +110,28 @@
     position="bottom-right"
     :offset="[18, 18]"
   >
-    <q-btn
+    <save-button
       v-if="hasDiff"
-      fab
-      icon="fa fa-save"
-      color="purple-6"
-      class="q-mr-sm relative-position"
+      class="q-mr-md"
       @click="onSave()"
-    >
-      <template #default>
-        <q-badge
-          label="Ctrl + s"
-          color="white"
-          text-color="purple-7"
-          class="absolute"
-          style="bottom: -5px; left: -2px;"
-        />
-      </template>
-    </q-btn>
+    />
 
-    <q-fab
-      icon="fa fa-bars"
-      direction="up"
-      color="accent"
+    <add-button
+      class="q-mr-md"
+      @click="addTodo()"
     >
-      <q-fab-action
-        color="purple-6"
-        icon="fa fa-home"
-        @click="goToHome"
-      />
-      <q-fab-action
-        color="purple-6"
-        icon="fa fa-add"
-        @click="addTodo"
-      />
-    </q-fab>
+      <template #tooltip>
+        <q-tooltip self="top left" anchor="top left">Add todo</q-tooltip>
+      </template>
+    </add-button>
+
+    <reload-button
+      @click="refresh()"
+    >
+      <template #tooltip>
+        <q-tooltip self="top left" anchor="top left">Reload file</q-tooltip>
+      </template>
+    </reload-button>
   </q-page-sticky>
 </template>
 
@@ -169,13 +156,17 @@ import {
   Notify
 } from 'quasar'
 import {
- dialogConfirm, randomTimeId
+  dialogConfirm,
+  randomTimeId
 } from 'src/utils'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import isEqual from 'lodash/fp/isEqual'
 import keyBy from 'lodash/keyBy'
 import { dateTimeFormat } from '../utils/date'
 import { useKeyboardListener } from 'src/composables/keyboardListener'
+import SaveButton from 'components/SaveButton.vue'
+import ReloadButton from 'components/ReloadButton.vue'
+import AddButton from 'components/AddButton.vue'
 
 const mainStore = useMainStore()
 const router = useRouter()
@@ -185,6 +176,18 @@ useKeyboardListener({
       e.preventDefault()
       onSave()
     }
+  },
+  'Control-r': {
+    callback: (e: KeyboardEvent) => {
+      e.preventDefault()
+      void refresh()
+    }
+  },
+  'Control-a': {
+    callback: (e: KeyboardEvent) => {
+      e.preventDefault()
+      void addTodo()
+    }
   }
 })
 
@@ -193,7 +196,7 @@ const {
   workingFileContent
 } = storeToRefs(mainStore)
 
-const API = mainStore.api
+const API = mainStore.apiOrThrow
 const file = ref<string>('')
 const baseWorkingFileContent = ref<FileData[]>([])
 
@@ -203,6 +206,20 @@ let attemptFileGetContents = 0
 const hasDiff = computed(() => {
   return !isEqual(workingFileContent.value, baseWorkingFileContent.value)
 })
+
+async function refresh () {
+  if (hasDiff.value) {
+    try {
+      await dialogConfirm('Cancel modifications ?')
+    } catch (e) {
+      return
+    }
+  }
+
+  Loading.show()
+  await getFileContents()
+  Loading.hide()
+}
 
 async function getFileContents () {
   if (attemptFileGetContents > 1) {
@@ -279,7 +296,7 @@ function onSave () {
   if (!hasDiff.value) {
     Notify.create({
       message: 'Nothing to save',
-      color: 'purple-7',
+      color: 'primary',
       textColor: 'white',
       timeout: 2000
     })

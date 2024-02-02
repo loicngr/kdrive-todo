@@ -25,7 +25,7 @@
             label="Filename *"
             suffix=".json"
             autofocus
-            :rules="[Rules.required, Rules.validFilename]"
+            :rules="[Rules.required, Rules.validFileNameOrFolder]"
             class="col-12"
             type="text"
           />

@@ -5,6 +5,7 @@ import {
 } from 'webdav'
 import { WebDAVApi } from 'src/utils/webdav'
 import { FileData } from 'src/interfaces/file'
+import { useSettingsStore } from 'stores/settings'
 
 interface State {
   ready: boolean
@@ -12,7 +13,7 @@ interface State {
   workingDir: string
   _workingFile?: string
   workingFileContent: FileData[]
-  _api?: WebDAVApi
+  api?: WebDAVApi
 }
 
 export const useMainStore = defineStore({
@@ -24,19 +25,22 @@ export const useMainStore = defineStore({
     workingDir: '/',
     workingFileContent: [],
     _workingFile: undefined,
-    _api: undefined
+    api: undefined
   }),
 
   getters: {
-    workingFile (): string | undefined {
-      return this._workingFile
-    },
-    api (): WebDAVApi {
-      if (typeof this._api === 'undefined') {
-        throw new Error('No api instance found')
+    apiOrThrow (): WebDAVApi {
+      const api = this.api
+
+      if (typeof api === 'undefined') {
+        throw new Error('Api not found')
       }
 
-      return this._api
+      return api
+    },
+
+    workingFile (): string | undefined {
+      return this._workingFile
     }
   },
 
@@ -55,15 +59,26 @@ export const useMainStore = defineStore({
         return
       }
 
+      const settingsStore = useSettingsStore()
+      const webDAV = settingsStore.webdav
+
+      if (
+        typeof webDAV.id === 'undefined' ||
+        typeof webDAV.username === 'undefined' ||
+        typeof webDAV.password === 'undefined'
+      ) {
+        return
+      }
+
       this.client = createClient(
-        `https://${process.env.VUE_KDRIVE_ID}.connect.kdrive.infomaniak.com/${process.env.VUE_KDRIVE_WORKING_DIR}`,
+        `https://${webDAV.id}.connect.kdrive.infomaniak.com/${webDAV.dir}`,
         {
-          username: process.env.VUE_KDRIVE_EMAIL,
-          password: process.env.VUE_KDRIVE_PASSWORD
+          username: webDAV.username,
+          password: webDAV.password
         }
       )
 
-      this._api = new WebDAVApi(this.client, this.workingDir)
+      this.api = new WebDAVApi(this.client, this.workingDir)
     }
   },
 })
