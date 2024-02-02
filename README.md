@@ -1,5 +1,7 @@
 # Manage your to-do list from a dedicated [kDrive](https://kdrive.infomaniak.com) interface through webdav
 
+![demo](demo.gif)
+
 ## Env
 - Create `.env.local` file at root and set your variables.
 - The default folder is `webdav_js`, please create it at the root of your kDrive.
