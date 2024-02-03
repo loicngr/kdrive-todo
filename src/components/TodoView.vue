@@ -2,6 +2,7 @@
   <template v-if="workingFileContent.length > 0">
     <q-card
       class="bg-primary col-md-6 col-12"
+      style="max-width: 900px"
     >
       <q-card-section>
         <q-list

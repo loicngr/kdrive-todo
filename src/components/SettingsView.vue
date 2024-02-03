@@ -3,6 +3,7 @@
     <div class="row justify-center">
       <q-card
         class="bg-primary col-md-6 col-12"
+        style="max-width: 900px"
       >
         <q-card-section class="text-h4">
           Settings
@@ -18,10 +19,10 @@
             class="row q-col-gutter-sm"
             @submit="onSubmit"
           >
-            <q-input
-              v-model.trim="webDAV.id"
+            <hidden-input
+              v-model="webDAV.id"
               label="kDrive ID *"
-              :rules="[Rules.required, Rules.validKDriveID]"
+              :rules="[$rules.required, $rules.validKDriveID]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
@@ -35,7 +36,7 @@
             <q-input
               v-model.trim="webDAV.dir"
               label="WebDAV folder *"
-              :rules="[Rules.required, Rules.string, Rules.validFileNameOrFolder]"
+              :rules="[$rules.required, $rules.string, $rules.validFileNameOrFolder]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
@@ -57,10 +58,10 @@
               </template>
             </q-input>
 
-            <q-input
+            <hidden-input
               v-model.trim="webDAV.username"
               label="kDrive email *"
-              :rules="[Rules.required, Rules.string, Rules.validEmail]"
+              :rules="[$rules.required, $rules.string, $rules.validEmail]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
@@ -71,10 +72,10 @@
               type="email"
             />
 
-            <q-input
+            <hidden-input
               v-model.trim="webDAV.password"
               label="kDrive password *"
-              :rules="[Rules.required, Rules.string]"
+              :rules="[$rules.required, $rules.string]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
@@ -84,7 +85,7 @@
               color="white"
               type="password"
             >
-              <template #append>
+              <template #append-after>
                 <q-icon
                   name="fa fa-circle-info"
                   color="white"
@@ -95,7 +96,7 @@
                   </q-tooltip>
                 </q-icon>
               </template>
-            </q-input>
+            </hidden-input>
           </q-form>
         </q-card-section>
       </q-card>
@@ -109,6 +110,7 @@
     >
       <q-card
         class="bg-primary col-md-6 col-12"
+        style="max-width: 900px"
       >
         <q-card-section style="font-size: .7rem">
           <q-icon name="fa fa-info" />
@@ -133,7 +135,6 @@
 </template>
 
 <script setup lang="ts">
-import { Rules } from 'src/utils/rules'
 import {
   DEFAULT_WEBDAV_STATE,
   useSettingsStore
@@ -150,6 +151,7 @@ import { storeToRefs } from 'pinia'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import { useKeyboardListener } from 'src/composables/keyboardListener'
 import SaveButton from 'components/SaveButton.vue'
+import HiddenInput from 'components/HiddenInput.vue'
 
 const settingsStore = useSettingsStore()
 

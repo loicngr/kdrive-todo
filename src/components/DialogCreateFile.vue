@@ -25,7 +25,7 @@
             label="Filename *"
             suffix=".json"
             autofocus
-            :rules="[Rules.required, Rules.validFileNameOrFolder]"
+            :rules="[$rules.required, $rules.validFileNameOrFolder]"
             class="col-12"
             type="text"
           />
@@ -58,7 +58,6 @@
 <script setup lang="ts">
 import { useDialogPluginComponent } from 'quasar'
 import { ref } from 'vue'
-import { Rules } from 'src/utils/rules'
 import deburr from 'lodash/fp/deburr'
 
 defineEmits([
