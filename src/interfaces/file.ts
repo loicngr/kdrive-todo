@@ -1,8 +1,10 @@
 import type { FileStat } from 'webdav'
 
 export interface CustomFileStat extends FileStat {
-  _id: string
   isFile: boolean
+  isTodo: boolean
+  vType: string
+  vName: string
 }
 export interface FileData {
   id: string

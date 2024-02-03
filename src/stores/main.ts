@@ -12,7 +12,8 @@ interface State {
   client?: WebDAVClient
   workingDir: string
   _workingFile?: string
-  workingFileContent: FileData[]
+  workingTodoFileContent: FileData[]
+  workingFileContent: string
   api?: WebDAVApi
 }
 
@@ -23,7 +24,8 @@ export const useMainStore = defineStore({
     ready: false,
     client: undefined,
     workingDir: '/',
-    workingFileContent: [],
+    workingTodoFileContent: [],
+    workingFileContent: '',
     _workingFile: undefined,
     api: undefined
   }),
@@ -46,7 +48,7 @@ export const useMainStore = defineStore({
 
   actions: {
     closeFile () {
-      this.workingFileContent = []
+      this.workingTodoFileContent = []
       this._workingFile = undefined
     },
 

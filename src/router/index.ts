@@ -10,6 +10,7 @@ import {
 import routes from './routes'
 import {
   ROUTER_INDEX_NAME,
+  ROUTER_TEXT_NAME,
   ROUTER_TODO_NAME
 } from 'src/constants'
 import { useMainStore } from 'stores/main'
@@ -22,7 +23,10 @@ async function routerBefore (
 ) {
   await localStorageReady
 
-  if (to.name === ROUTER_TODO_NAME) {
+  if (
+    to.name === ROUTER_TODO_NAME ||
+    to.name === ROUTER_TEXT_NAME
+  ) {
     const mainStore = useMainStore()
     if (typeof mainStore.workingFile === 'undefined') {
       next({

@@ -15,7 +15,7 @@
       >
         <q-card-section class="col-auto">
           <div class="text-h6">
-            Create a new file
+            Create a new todo file
           </div>
         </q-card-section>
 

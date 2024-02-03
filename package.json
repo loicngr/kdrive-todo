@@ -1,8 +1,8 @@
 {
-  "name": "kdrive-todo",
-  "version": "0.0.3",
-  "description": "A kDrive todo list app",
-  "productName": "kDrive todo app",
+  "name": "kdrive-notes",
+  "version": "0.0.4",
+  "description": "A kDrive notes app",
+  "productName": "kDrive notes app",
   "author": "loicngr <loicnogier@ik.me>",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
@@ -19,7 +19,6 @@
     "axios": "^1.6.7",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
-    "lodash.clonedeep": "^4.5.0",
     "pinia": "^2.0.11",
     "quasar": "^2.14.3",
     "vue": "^3.4.15",
