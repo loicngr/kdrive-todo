@@ -1,10 +1,9 @@
 {
   "name": "kdrive-todo",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A kDrive todo list app",
   "productName": "kDrive todo app",
   "author": "loicngr <loicnogier@ik.me>",
-  "private": true,
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",

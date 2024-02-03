@@ -1,11 +1,11 @@
 # kDrive to-do list
 - Manage your to-do lists in a simplified interface.
-- The application connects to your [Informaniak kDrive](https://kdrive.infomaniak.com) kDrive via webDAV.
+- The application connects to your [Infomaniak kDrive](https://kdrive.infomaniak.com) via webDAV.
 
+# [How to setup and use](https://kdrive.infomaniak.com/app/share/107082/2c0bee21-2771-4400-9194-a146b85b138e)
+# [How to install on PC and Phone](doc/PWA.md)
 
-![demo](demo.gif)
-
-## Env
+## Setup infos
 - The default folder is `WebDAVJS`, please create it at the root of your kDrive.
 
 ## File structure
@@ -46,10 +46,6 @@ quasar build
 ### Customize the configuration
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
 
-## TODO
-- [ ] Make all in the box version for no developer (PWA?)
-- [ ] Go in folder
-- [ ] Cache issue with webdav on file load (![chrome-cache.png](chrome-cache.png))
-
 ## Links
+- https://kdrive-todo.netlify.app
 - https://www.infomaniak.com/fr/support/faq/2409/se-connecter-a-kdrive-via-webdav
