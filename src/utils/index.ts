@@ -2,6 +2,7 @@ import { CustomFileStat } from 'src/interfaces/file'
 import { dateTimeFormat } from 'src/utils/date'
 import deburr from 'lodash/fp/deburr'
 import { Dialog } from 'quasar'
+import type { FileStat } from 'webdav'
 
 export function generateIdFromFile(item: CustomFileStat): string {
   const date = dateTimeFormat(item.lastmod).replaceAll('/', '_')
@@ -29,6 +30,24 @@ export function dialogConfirm (message: string) {
       .onOk(resolve)
       .onCancel(reject)
   })
+}
+
+export function extractFilename (filename: string) {
+  const lastIndexOfPoint = filename.lastIndexOf('.')
+
+  return lastIndexOfPoint === -1
+    ? filename
+    : filename.slice(0, lastIndexOfPoint)
+}
+
+export function directoryContentItemIsTodo (item: FileStat) {
+  return item.type === 'file' && item.basename.endsWith('.json')
+}
+
+export function getDirectoryContentItemName (item: CustomFileStat) {
+  return item.isFile
+    ? extractFilename(item.basename)
+    : item.basename
 }
 
 export class HandleKeyboardListener {

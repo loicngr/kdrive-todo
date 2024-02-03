@@ -47,5 +47,5 @@ quasar build
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-vite/quasar-config-js).
 
 ## Links
-- https://kdrive-todo.netlify.app
+- https://kdrive-notes.netlify.app
 - https://www.infomaniak.com/fr/support/faq/2409/se-connecter-a-kdrive-via-webdav

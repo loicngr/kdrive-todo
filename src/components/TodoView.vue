@@ -1,5 +1,5 @@
 <template>
-  <template v-if="workingFileContent.length > 0">
+  <template v-if="workingTodoFileContent.length > 0">
     <q-card
       class="bg-primary col-md-6 col-12"
       style="max-width: 900px"
@@ -21,7 +21,7 @@
           />
 
           <q-item
-            v-for="(todo, index) in workingFileContent"
+            v-for="(todo, index) in workingTodoFileContent"
             :key="index"
           >
             <q-item-section
@@ -194,7 +194,7 @@ useKeyboardListener({
 
 const {
   workingFile,
-  workingFileContent
+  workingTodoFileContent
 } = storeToRefs(mainStore)
 
 const API = mainStore.apiOrThrow
@@ -205,7 +205,7 @@ let promiseWait: CallableFunction | undefined
 let attemptFileGetContents = 0
 
 const hasDiff = computed(() => {
-  return !isEqual(workingFileContent.value, baseWorkingFileContent.value)
+  return !isEqual(workingTodoFileContent.value, baseWorkingFileContent.value)
 })
 
 async function refresh () {
@@ -253,7 +253,7 @@ async function getFileContents () {
     return
   }
 
-  workingFileContent.value = parsedJson
+  workingTodoFileContent.value = parsedJson
   baseWorkingFileContent.value = cloneDeep(parsedJson)
   attemptFileGetContents = 0
 }
@@ -261,16 +261,16 @@ async function getFileContents () {
 function onDeleteTodo(todo: FileData) {
   dialogConfirm('Delete this element ?')
     .then(() => {
-      const elementIndex = workingFileContent.value.findIndex((c) => c.id === todo.id)
+      const elementIndex = workingTodoFileContent.value.findIndex((c) => c.id === todo.id)
 
       if (elementIndex !== -1) {
-        workingFileContent.value.splice(elementIndex, 1)
+        workingTodoFileContent.value.splice(elementIndex, 1)
       }
     })
 }
 
 function addTodo() {
-  workingFileContent.value.unshift({
+  workingTodoFileContent.value.unshift({
     id: randomTimeId(),
     title: 'new todo',
     content: '',
@@ -306,7 +306,7 @@ function onSave () {
 
   dialogConfirm('Do you want save')
     .then(async () => {
-      const actual = cloneDeep(workingFileContent.value)
+      const actual = cloneDeep(workingTodoFileContent.value)
       const base = keyBy(cloneDeep(baseWorkingFileContent.value), 'id')
       const dateNow = new Date()
 

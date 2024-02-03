@@ -34,6 +34,7 @@ import {
 import {
   ROUTER_INDEX_NAME,
   ROUTER_SETTINGS_NAME,
+  ROUTER_TEXT_NAME,
   ROUTER_TODO_NAME
 } from 'src/constants'
 import { computed } from 'vue'
@@ -42,7 +43,7 @@ const route = useRoute()
 const router = useRouter()
 
 const canShow = computed(() => {
-  return route.name === ROUTER_SETTINGS_NAME || route.name === ROUTER_INDEX_NAME || route.name === ROUTER_TODO_NAME
+  return route.name === ROUTER_SETTINGS_NAME || route.name === ROUTER_INDEX_NAME || route.name === ROUTER_TODO_NAME || route.name === ROUTER_TEXT_NAME
 })
 
 const goToPageName = computed(() => {

@@ -9,12 +9,12 @@
       @mouseleave="onMouseLeave($event)"
     >
       <q-card-section class="col row items-center justify-center">
-        {{ item.basename }}
+        {{ item.vName }}
       </q-card-section>
 
       <q-card-section class="absolute-bottom">
         <q-chip
-          :label="item.type"
+          :label="item.vType"
           size="sm"
         />
         <q-chip
@@ -68,7 +68,7 @@
   >
     <add-button
       class="q-mr-md"
-      @click="createNewFile()"
+      @click="newFileDialog()"
     >
       <template #tooltip>
         <q-tooltip self="top left" anchor="top left">Create a new file</q-tooltip>
@@ -101,21 +101,24 @@ import { CustomFileStat } from 'src/interfaces/file'
 import { useContextMenu } from 'src/composables/contextMenu'
 import {
   dialogConfirm,
+  directoryContentItemIsTodo,
   downloadBlob,
-  generateIdFromFile
+  getDirectoryContentItemName
 } from 'src/utils'
 import { ContextMenuOption } from 'src/interfaces/contextMenu'
 import isArrayBuffer from 'lodash/isArrayBuffer'
-import DialogCreateFile from 'components/DialogCreateFile.vue'
 import { useMainStore } from 'stores/main'
 import { useRouter } from 'vue-router'
 import {
   DEFAULT_TODO,
+  ROUTER_TEXT_NAME,
   ROUTER_TODO_NAME
 } from 'src/constants'
 import ReloadButton from 'components/ReloadButton.vue'
 import { useKeyboardListener } from 'src/composables/keyboardListener'
 import AddButton from 'components/AddButton.vue'
+import DialogCreateTodoFile from 'components/DialogCreateTodoFile.vue'
+import DialogCreateTextFile from 'components/DialogCreateTextFile.vue'
 
 const mainStore = useMainStore()
 const $q = useQuasar()
@@ -131,7 +134,7 @@ useKeyboardListener({
   'Control-a': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
-      void createNewFile()
+      void newFileDialog()
     }
   }
 })
@@ -140,11 +143,24 @@ const API = mainStore.apiOrThrow
 const directoryContents = ref<CustomFileStat[]>(await API.getDirectoryContents())
 
 const vDirectoryContents = computed(() => {
-  return directoryContents.value.map((directoryContentsItem) => ({
-    ...directoryContentsItem,
-    isFile: directoryContentsItem.type === 'file',
-    _id: generateIdFromFile(directoryContentsItem)
-  }))
+  return directoryContents.value.map((directoryContentsItem) => {
+    const v = {
+      ...directoryContentsItem,
+      isFile: directoryContentsItem.type === 'file',
+      vType: directoryContentsItem.type as string,
+    }
+
+    Object.assign(v, {
+      vName: getDirectoryContentItemName(v),
+      isTodo: directoryContentItemIsTodo(v),
+    })
+
+    if (v.isTodo) {
+      v.vType = 'todo'
+    }
+
+    return v
+  })
 })
 
 const baseContextMenuOptions: ContextMenuOption[] = [
@@ -154,19 +170,32 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     if: (ctx) => typeof ctx === 'undefined',
     callback: () => {
       closeMenu()
-      createNewFile()
+      newFileDialog()
     }
   },
   {
-    value: 'open',
-    label: 'Open',
-    if: (ctx) => ctx?.isFile ?? false,
+    value: 'open_todo_list',
+    label: 'Open todo list',
+    if: (ctx) => (ctx?.isFile ?? false) && (ctx?.isTodo ?? false),
     callback: (ctx) => {
       closeMenu()
 
       mainStore.setWorkingFile(ctx?.basename)
       router.push({
         name: ROUTER_TODO_NAME
+      })
+    }
+  },
+  {
+    value: 'open_text',
+    label: 'Open text file',
+    if: (ctx) => (ctx?.isFile ?? false) && !(ctx?.isTodo ?? false),
+    callback: (ctx) => {
+      closeMenu()
+
+      mainStore.setWorkingFile(ctx?.basename)
+      router.push({
+        name: ROUTER_TEXT_NAME
       })
     }
   },
@@ -236,9 +265,39 @@ async function refreshDirectoryContents(dir?: string) {
   Loading.hide()
 }
 
-function createNewFile() {
+function newFileDialog () {
   $q.dialog({
-    component: DialogCreateFile,
+    title: 'Options',
+    message: 'Select new file type:',
+    options: {
+      type: 'radio',
+      model: 'todo',
+      items: [
+        {
+          label: 'Text',
+          value: 'text'
+        },
+        {
+          label: 'Todo',
+          value: 'todo'
+        },
+      ]
+    },
+    cancel: true,
+    persistent: true
+  }).onOk((data) => {
+    if (data === 'todo') {
+      void createNewTodoFile()
+      return
+    }
+
+    void createNewTextFile()
+  })
+}
+
+function createNewTodoFile() {
+  $q.dialog({
+    component: DialogCreateTodoFile,
   }).onOk((data: { filename: string }) => {
     const {
       filename
@@ -250,6 +309,29 @@ function createNewFile() {
 
     Loading.show()
     API.writeInFile(filename.concat('.json'), JSON.stringify(DEFAULT_TODO))
+      .then(() => {
+        refreshDirectoryContents()
+      })
+      .finally(() => {
+        Loading.hide()
+      })
+  })
+}
+
+function createNewTextFile() {
+  $q.dialog({
+    component: DialogCreateTextFile,
+  }).onOk((data: { filename: string }) => {
+    const {
+      filename
+    } = data
+
+    if (filename.trim().length === 0) {
+      return
+    }
+
+    Loading.show()
+    API.writeInFile(filename.concat('.txt'), '')
       .then(() => {
         refreshDirectoryContents()
       })
