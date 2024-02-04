@@ -38,3 +38,6 @@ yarn-error.log*
 *.keystore
 *.apk
 *.apk.*
+*.pem
+/output.zip
+*.aab
