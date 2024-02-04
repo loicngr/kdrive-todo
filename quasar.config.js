@@ -120,6 +120,7 @@ module.exports = configure(function (/* ctx */) {
       lang: 'fr',
       importStrategy: 'auto',
       config: {
+        dark: true,
         capacitor: {
           iosStatusBarPadding: true, // add the dynamic top padding on iOS mobile devices
         }

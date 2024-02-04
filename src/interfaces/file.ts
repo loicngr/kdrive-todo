@@ -3,6 +3,7 @@ import type { FileStat } from 'webdav'
 export interface CustomFileStat extends FileStat {
   isFile: boolean
   isTodo: boolean
+  isNote: boolean
   vType: string
   vName: string
 }

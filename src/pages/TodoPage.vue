@@ -6,7 +6,7 @@
       <template #fallback>
         <q-spinner-dots
           size="lg"
-          color="purple-6"
+          color="primary"
         />
       </template>
     </suspense>

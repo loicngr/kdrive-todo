@@ -3,8 +3,10 @@
     <q-card
       v-for="item in vDirectoryContents"
       :key="item.etag"
-      class="col-3 q-ma-md q-pa-none bg-purple-6 column cursor-pointer"
+      flat
+      class="col-3 q-ma-md q-pa-none bg-card primary-hover column cursor-pointer"
       style="overflow: auto; min-height: 200px; max-height: 200px; min-width: 200px; max-width: 200px;"
+      @dblclick="onDblClick($event, item)"
       @mouseenter="onMouseEnter($event, item)"
       @mouseleave="onMouseLeave($event)"
     >
@@ -12,11 +14,12 @@
         {{ item.vName }}
       </q-card-section>
 
-      <q-card-section class="absolute-bottom">
+      <q-card-section class="absolute-bottom no-pointer-events">
         <q-chip
           :label="item.vType"
           size="sm"
         />
+
         <q-chip
           :label="dateTimeFormat(item.lastmod)"
           size="sm"
@@ -30,6 +33,7 @@
     context-menu
     touch-position
     dense
+    class="bg-menu"
     @before-hide="closeMenu"
   >
     <q-list
@@ -101,6 +105,7 @@ import { CustomFileStat } from 'src/interfaces/file'
 import { useContextMenu } from 'src/composables/contextMenu'
 import {
   dialogConfirm,
+  directoryContentItemIsNote,
   directoryContentItemIsTodo,
   downloadBlob,
   getDirectoryContentItemName
@@ -153,10 +158,13 @@ const vDirectoryContents = computed(() => {
     Object.assign(v, {
       vName: getDirectoryContentItemName(v),
       isTodo: directoryContentItemIsTodo(v),
+      isNote: directoryContentItemIsNote(v),
     })
 
     if (v.isTodo) {
       v.vType = 'todo'
+    } else if (v.isNote) {
+      v.vType = 'note'
     }
 
     return v
@@ -179,11 +187,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     if: (ctx) => (ctx?.isFile ?? false) && (ctx?.isTodo ?? false),
     callback: (ctx) => {
       closeMenu()
-
-      mainStore.setWorkingFile(ctx?.basename)
-      router.push({
-        name: ROUTER_TODO_NAME
-      })
+      openTodoFile(ctx)
     }
   },
   {
@@ -192,11 +196,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     if: (ctx) => (ctx?.isFile ?? false) && !(ctx?.isTodo ?? false),
     callback: (ctx) => {
       closeMenu()
-
-      mainStore.setWorkingFile(ctx?.basename)
-      router.push({
-        name: ROUTER_TEXT_NAME
-      })
+      openTextFile(ctx)
     }
   },
   {
@@ -269,6 +269,7 @@ function newFileDialog () {
   $q.dialog({
     title: 'Options',
     message: 'Select new file type:',
+    color: 'primary',
     options: {
       type: 'radio',
       model: 'todo',
@@ -342,9 +343,6 @@ function createNewTextFile() {
 }
 
 function onMouseEnter(e: MouseEvent, item: CustomFileStat) {
-  const target = e.target as HTMLElement
-  target.classList.replace('bg-purple-6', 'bg-purple-5')
-
   if (typeof contextMenuItem.value !== 'undefined' && contextMenuShow.value) {
     closeMenu()
   }
@@ -354,14 +352,47 @@ function onMouseEnter(e: MouseEvent, item: CustomFileStat) {
   })
 }
 
-function onMouseLeave(e: MouseEvent) {
-  const target = e.target as HTMLElement
-  target.classList.replace('bg-purple-5', 'bg-purple-6')
+function onDblClick(e: MouseEvent, item: CustomFileStat) {
+  if (item.isTodo) {
+    openTodoFile(item)
+    return
+  }
 
+  if (item.isNote) {
+    openTextFile(item)
+    return
+  }
+}
+
+function onMouseLeave(e: MouseEvent) {
   nextTick(() => {
     if (!contextMenuShow.value) {
       contextMenuItem.value = undefined
     }
+  })
+}
+
+function openTodoFile (item?: CustomFileStat) {
+  if (typeof item === 'undefined') {
+    return
+  }
+
+  mainStore.setWorkingFile(item.basename)
+
+  router.push({
+    name: ROUTER_TODO_NAME
+  })
+}
+
+function openTextFile (item?: CustomFileStat) {
+  if (typeof item === 'undefined') {
+    return
+  }
+
+  mainStore.setWorkingFile(item.basename)
+
+  router.push({
+    name: ROUTER_TEXT_NAME
   })
 }
 </script>

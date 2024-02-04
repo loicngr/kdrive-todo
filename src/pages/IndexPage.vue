@@ -7,7 +7,7 @@
         <template #fallback>
           <q-spinner-dots
             size="lg"
-            color="purple-6"
+            color="primary"
           />
         </template>
       </suspense>
@@ -15,7 +15,7 @@
     <template v-else>
       <q-spinner-dots
         size="lg"
-        color="purple-6"
+        color="primary"
       />
 
       <q-page-sticky
@@ -25,7 +25,7 @@
         <q-btn
           fab
           icon="fa fa-refresh"
-          color="purple-6"
+          color="primary"
           @click="reload()"
         >
           <q-tooltip>Reload app</q-tooltip>

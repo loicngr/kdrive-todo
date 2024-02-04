@@ -1,7 +1,8 @@
 <template>
   <q-card
     ref="cardRef"
-    class="bg-primary col-md-6 col-12"
+    class="col-md-6 col-12"
+    flat
     style="max-width: 1200px; min-height: 70vh"
   >
     <q-card-section>
