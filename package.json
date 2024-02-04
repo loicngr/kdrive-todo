@@ -11,7 +11,8 @@
     "dev": "quasar dev",
     "build": "quasar build",
     "build:pwa": "quasar build -m pwa",
-    "generate:icons": "icongenie g -i src/assets/logo.png -p ./icongenie/icongenie-pwa.json"
+    "generate:icons": "icongenie g -i src/assets/logo.png -p ./icongenie/icongenie-pwa.json",
+    "generate:android:icons": "icongenie generate -m capacitor -i src/assets/logo.png"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.9",
