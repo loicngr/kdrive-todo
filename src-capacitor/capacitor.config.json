@@ -1,0 +1,8 @@
+{
+  "appId": "fr.zkf.kdrive_notes",
+  "appName": "kDrive notes app",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}

@@ -25,6 +25,10 @@ module.exports = configure(function (/* ctx */) {
       errors: true
     },
 
+    bin: {
+      linuxAndroidStudio: ''
+    },
+
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature
     // preFetch: true,
 
