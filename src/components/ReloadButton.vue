@@ -2,7 +2,7 @@
   <q-btn
     fab
     icon="fa fa-refresh"
-    color="purple-6"
+    color="primary"
     v-bind="$attrs"
   >
     <template #default>

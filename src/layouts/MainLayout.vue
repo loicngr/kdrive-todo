@@ -1,7 +1,7 @@
 <template>
   <q-layout
     view="lHh Lpr lFf"
-    class="bg-grey-10 text-white"
+    class="bg-dark-page"
   >
     <q-page-container>
       <router-view />
@@ -14,10 +14,13 @@
         <q-btn
           fab
           :icon="goToPageIcon"
-          color="purple-6"
+          color="primary"
           @click="goTo()"
         >
-          <q-tooltip self="bottom right" anchor="top right">
+          <q-tooltip
+            self="bottom right"
+            anchor="top right"
+          >
             Go to {{ goToPageName }} page
           </q-tooltip>
         </q-btn>

@@ -1,3 +1,36 @@
 .error-white .q-field__bottom {
-    --q-negative: #ffffff;
+    // --q-negative: #ffffff;
+}
+
+.body--light {
+}
+
+.body--dark {
+    background: $dark-page;
+}
+
+.q-menu--dark {
+    box-shadow: none;
+}
+
+.color-foreground-text {
+    color: $color-foreground-text;
+}
+
+.primary-hover {
+    :hover {
+        background: $primary-hover;
+    }
+}
+
+.bg-menu {
+    background: $menu;
+}
+
+.bg-card {
+    background: $card;
+
+    :hover {
+        background: #494e52;
+    }
 }

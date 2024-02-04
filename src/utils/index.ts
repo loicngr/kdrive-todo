@@ -44,6 +44,10 @@ export function directoryContentItemIsTodo (item: FileStat) {
   return item.type === 'file' && item.basename.endsWith('.json')
 }
 
+export function directoryContentItemIsNote (item: FileStat) {
+  return item.type === 'file' && item.basename.endsWith('.txt')
+}
+
 export function getDirectoryContentItemName (item: CustomFileStat) {
   return item.isFile
     ? extractFilename(item.basename)

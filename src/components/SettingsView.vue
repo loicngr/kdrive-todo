@@ -2,8 +2,9 @@
   <div class="col column">
     <div class="row justify-center">
       <q-card
-        class="bg-primary col-md-6 col-12"
+        class="bg-card col-md-6 col-12"
         style="max-width: 900px"
+        flat
       >
         <q-card-section class="text-h4">
           Settings
@@ -109,7 +110,8 @@
       }"
     >
       <q-card
-        class="bg-primary col-md-6 col-12"
+        class="bg-card col-md-6 col-12"
+        flat
         style="max-width: 900px"
       >
         <q-card-section style="font-size: .7rem">

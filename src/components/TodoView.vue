@@ -1,7 +1,8 @@
 <template>
   <template v-if="workingTodoFileContent.length > 0">
     <q-card
-      class="bg-primary col-md-6 col-12"
+      class="bg-card col-md-6 col-12"
+      flat
       style="max-width: 900px"
     >
       <q-card-section>
@@ -11,7 +12,7 @@
         >
           <q-item-label
             header
-            class="text-white text-h4"
+            class="text-h4"
           >
             {{ file }}
           </q-item-label>
@@ -41,7 +42,6 @@
                   hide-hint
                   borderless
                   maxlength="255"
-                  input-class="text-white"
                 />
               </q-item-label>
               <q-item-label
@@ -55,14 +55,13 @@
                   hide-hint
                   borderless
                   maxlength="500"
-                  input-class="text-white text-caption"
+                  input-class="text-caption"
                 />
               </q-item-label>
             </q-item-section>
 
             <q-item-section
               side
-              class="text-white"
               style="font-size: 0.7em !important;"
             >
               <q-item-label>
@@ -80,7 +79,6 @@
               <q-toggle
                 class="col-6"
                 :model-value="todo.status === FILE_DATA_STATUS_DONE"
-                color="white"
                 @click="todo.status === FILE_DATA_STATUS_DONE ? todo.status = FILE_DATA_STATUS_TODO : todo.status = FILE_DATA_STATUS_DONE"
               />
             </q-item-section>
@@ -90,11 +88,9 @@
               style="padding: 0 !important;"
             >
               <q-btn
-                dense
-                unelevated
                 fab-mini
+                unelevated
                 icon="fa fa-remove"
-                text-color="white"
                 @click="onDeleteTodo(todo)"
               />
             </q-item-section>
