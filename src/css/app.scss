@@ -19,7 +19,7 @@
 
 .primary-hover {
     :hover {
-        background: $primary-hover;
+        background: #494e52;
     }
 }
 
@@ -29,8 +29,4 @@
 
 .bg-card {
     background: $card;
-
-    :hover {
-        background: #494e52;
-    }
 }
