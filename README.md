@@ -1,15 +1,14 @@
-# kDrive to-do list
-- Manage your to-do lists in a simplified interface.
+# kDrive Notes & To-do lists
+- Manage your notes and to-do lists in a simplified interface.
 - The application connects to your [Infomaniak kDrive](https://kdrive.infomaniak.com) via webDAV.
 
-# [How to setup and use](https://kdrive.infomaniak.com/app/share/107082/2c0bee21-2771-4400-9194-a146b85b138e)
-# [How to install on PC and Phone](doc/PWA.md)
+## How to
+- [How to setup and use (video from v0.0.1)](https://kdrive.infomaniak.com/app/share/107082/2c0bee21-2771-4400-9194-a146b85b138e)
+- [How to install PWA on PC and Phone](doc/PWA.md)
+## Android version coming soon (wait google validation)
 
 ## Setup infos
 - The default folder is `WebDAVJS`, please create it at the root of your kDrive.
-
-## File structure
-Default file template: `{"todos": []}`
 
 ## Install the dependencies
 ```bash
