@@ -14,87 +14,106 @@
             header
             class="text-h4"
           >
-            {{ file }}
+            {{ extractFilename(file) }}
           </q-item-label>
 
           <q-separator
             spaced
           />
 
-          <q-item
-            v-for="(todo, index) in workingTodoFileContent"
-            :key="index"
+          <div
+            ref="listRef"
           >
-            <q-item-section
-              :class="{
-                'todoDone': todo.status === FILE_DATA_STATUS_DONE,
-                'todoDoing': todo.status !== FILE_DATA_STATUS_DONE
-              }"
+            <q-item
+              v-for="todo in workingTodoFileContent"
+              :key="todo.id"
+              clickable
             >
-              <q-item-label
-                style="margin: 0 !important;"
+              <q-item-section
+                side
+                style="padding: 0 !important; margin: 0 !important;"
               >
-                <q-input
-                  v-model.trim="todo.title"
-                  type="text"
-                  dense
-                  hide-bottom-space
-                  hide-hint
-                  borderless
-                  maxlength="255"
+                <q-icon
+                  left
+                  class="handle"
+                  name="fa fa-grip-vertical"
                 />
-              </q-item-label>
-              <q-item-label
-                style="margin: 0 !important;"
+              </q-item-section>
+
+              <q-item-section
+                :class="{
+                  'todoDone': todo.status === FILE_DATA_STATUS_DONE,
+                  'todoDoing': todo.status !== FILE_DATA_STATUS_DONE
+                }"
               >
-                <q-input
-                  v-model.trim="todo.content"
-                  type="text"
-                  dense
-                  hide-bottom-space
-                  hide-hint
-                  borderless
-                  maxlength="500"
-                  input-class="text-caption"
+                <q-item-label
+                  style="margin: 0 !important;"
+                >
+                  <q-input
+                    v-model.trim="todo.title"
+                    type="text"
+                    dense
+                    hide-bottom-space
+                    hide-hint
+                    borderless
+                    maxlength="255"
+                  />
+                </q-item-label>
+                <q-item-label
+                  style="margin: 0 !important;"
+                  class="overflow-hidden"
+                >
+                  <q-input
+                    v-model.trim="todo.content"
+                    type="text"
+                    dense
+                    hide-bottom-space
+                    hide-hint
+                    borderless
+                    autogrow
+                    rows="2"
+                    maxlength="500"
+                    input-class="text-caption"
+                  />
+                </q-item-label>
+              </q-item-section>
+
+              <q-item-section
+                side
+                style="padding: 0 !important;"
+              >
+                <q-toggle
+                  class="col-6"
+                  :model-value="todo.status === FILE_DATA_STATUS_DONE"
+                  @click="todo.status === FILE_DATA_STATUS_DONE ? todo.status = FILE_DATA_STATUS_TODO : todo.status = FILE_DATA_STATUS_DONE"
                 />
-              </q-item-label>
-            </q-item-section>
+              </q-item-section>
 
-            <q-item-section
-              side
-              style="font-size: 0.7em !important;"
-            >
-              <q-item-label>
-                Created at: {{ dateTimeFormat(todo.createdAt) }}
-              </q-item-label>
-              <q-item-label>
-                Update at: {{ todo.updatedAt === null ? 'never' : dateTimeFormat(todo.updatedAt) }}
-              </q-item-label>
-            </q-item-section>
+              <q-item-section
+                side
+                style="padding: 0 !important;"
+                class="column"
+              >
+                <q-icon
+                  name="fa fa-info"
+                  class="full-width"
+                >
+                  <q-tooltip>
+                    Created at: {{ dateTimeFormat(todo.createdAt) }} <br>
+                    Update at: {{ todo.updatedAt === null ? 'never' : dateTimeFormat(todo.updatedAt) }}
+                  </q-tooltip>
+                </q-icon>
 
-            <q-item-section
-              side
-              style="padding: 0 !important;"
-            >
-              <q-toggle
-                class="col-6"
-                :model-value="todo.status === FILE_DATA_STATUS_DONE"
-                @click="todo.status === FILE_DATA_STATUS_DONE ? todo.status = FILE_DATA_STATUS_TODO : todo.status = FILE_DATA_STATUS_DONE"
-              />
-            </q-item-section>
-
-            <q-item-section
-              side
-              style="padding: 0 !important;"
-            >
-              <q-btn
-                fab-mini
-                unelevated
-                icon="fa fa-remove"
-                @click="onDeleteTodo(todo)"
-              />
-            </q-item-section>
-          </q-item>
+                <q-btn
+                  fab-mini
+                  unelevated
+                  dense
+                  icon="fa fa-remove"
+                  @click="onDeleteTodo(todo)"
+                />
+              </q-item-section>
+            </q-item>
+          </div>
         </q-list>
       </q-card-section>
     </q-card>
@@ -133,6 +152,7 @@
 </template>
 
 <script setup lang="ts">
+import { useSortable } from '@vueuse/integrations/useSortable'
 import { useMainStore } from 'stores/main'
 import {
   computed,
@@ -143,6 +163,7 @@ import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import {
   DEFAULT_TODO,
+  DEFAULT_TODOS,
   FILE_DATA_STATUS_DONE,
   FILE_DATA_STATUS_TODO,
   ROUTER_INDEX_NAME
@@ -150,10 +171,11 @@ import {
 import { FileData } from 'src/interfaces/file'
 import {
   Loading,
-  Notify
+  Notify, QList
 } from 'quasar'
 import {
   dialogConfirm,
+  extractFilename,
   randomTimeId
 } from 'src/utils'
 import cloneDeep from 'lodash/fp/cloneDeep'
@@ -195,10 +217,19 @@ const {
 
 const API = mainStore.apiOrThrow
 const file = ref<string>('')
+const listRef = ref<InstanceType<typeof HTMLElement> | null>(null)
 const baseWorkingFileContent = ref<FileData[]>([])
 
 let promiseWait: CallableFunction | undefined
 let attemptFileGetContents = 0
+
+const {
+ option
+} = useSortable(listRef, workingTodoFileContent, {
+  handle: '.handle',
+})
+
+option('animation', 200)
 
 const hasDiff = computed(() => {
   return !isEqual(workingTodoFileContent.value, baseWorkingFileContent.value)
@@ -235,7 +266,7 @@ async function getFileContents () {
 
   if (typeof parsedJson === 'undefined') {
     try {
-      const defaultTemplate = JSON.stringify(DEFAULT_TODO)
+      const defaultTemplate = JSON.stringify(DEFAULT_TODOS)
       console.log('default template is:', defaultTemplate)
       await dialogConfirm('Your file is empty, clear file content and add default template ?')
 
@@ -266,13 +297,11 @@ function onDeleteTodo(todo: FileData) {
 }
 
 function addTodo() {
-  workingTodoFileContent.value.unshift({
+  workingTodoFileContent.value.push({
+    ...DEFAULT_TODO,
     id: randomTimeId(),
     title: 'new todo',
-    content: '',
-    status: FILE_DATA_STATUS_TODO,
     createdAt: new Date().toString(),
-    updatedAt: null,
   })
 }
 

@@ -115,7 +115,7 @@ import isArrayBuffer from 'lodash/isArrayBuffer'
 import { useMainStore } from 'stores/main'
 import { useRouter } from 'vue-router'
 import {
-  DEFAULT_TODO,
+  DEFAULT_TODOS,
   ROUTER_TEXT_NAME,
   ROUTER_TODO_NAME
 } from 'src/constants'
@@ -309,7 +309,7 @@ function createNewTodoFile() {
     }
 
     Loading.show()
-    API.writeInFile(filename.concat('.json'), JSON.stringify(DEFAULT_TODO))
+    API.writeInFile(filename.concat('.json'), JSON.stringify(DEFAULT_TODOS))
       .then(() => {
         refreshDirectoryContents()
       })
@@ -364,7 +364,7 @@ function onDblClick(e: MouseEvent, item: CustomFileStat) {
   }
 }
 
-function onMouseLeave(e: MouseEvent) {
+function onMouseLeave(/** e: MouseEvent */) {
   nextTick(() => {
     if (!contextMenuShow.value) {
       contextMenuItem.value = undefined

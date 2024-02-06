@@ -4,7 +4,7 @@ export class Rules {
   }
 
   public static validFileNameOrFolder (val: string | undefined) {
-    return (typeof val === 'string' && /^\w{1,14}$/.test(val)) || 'Not valid'
+    return (typeof val === 'string' && /^\w{1,255}$/.test(val)) || 'Not valid'
   }
 
   public static validKDriveID (val: string | undefined) {
