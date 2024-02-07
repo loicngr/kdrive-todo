@@ -29,7 +29,12 @@
       @click="refresh()"
     >
       <template #tooltip>
-        <q-tooltip self="top left" anchor="top left">Reload file</q-tooltip>
+        <q-tooltip
+          self="top left"
+          anchor="top left"
+        >
+          Reload file
+        </q-tooltip>
       </template>
     </reload-button>
   </q-page-sticky>
@@ -40,14 +45,14 @@ import { useMainStore } from 'stores/main'
 import {
   computed,
   onBeforeUnmount,
-  ref
+  ref,
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { ROUTER_INDEX_NAME } from 'src/constants'
 import {
   Loading,
-  Notify, QCard
+  Notify, QCard,
 } from 'quasar'
 import { dialogConfirm } from 'src/utils'
 import cloneDeep from 'lodash/fp/cloneDeep'
@@ -63,19 +68,19 @@ useKeyboardListener({
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
       onSave()
-    }
+    },
   },
   'Control-r': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
       void refresh()
-    }
-  }
+    },
+  },
 })
 
 const {
   workingFile,
-  workingFileContent
+  workingFileContent,
 } = storeToRefs(mainStore)
 
 const cardRef = ref<InstanceType<typeof QCard> | null>(null)
@@ -89,7 +94,7 @@ const hasDiff = computed(() => {
 })
 
 const editorHeight = computed(() => {
-  return ((cardRef.value?.$el as HTMLElement)?.clientHeight || '70vh').toString()
+  return ((cardRef.value?.$el as HTMLElement)?.clientHeight ?? '70vh').toString()
 })
 
 async function refresh () {
@@ -117,15 +122,8 @@ async function getFileContents () {
   baseWorkingFileContent.value = cloneDeep(fileContent)
 }
 
-function ensureFileExist() {
-  if (typeof workingFile?.value === 'undefined') {
-    goToHome()
-    return
-  }
-}
-
 function goToHome () {
-  router.replace({
+  void router.replace({
     name: ROUTER_INDEX_NAME,
   })
 }
@@ -136,12 +134,12 @@ function onSave () {
       message: 'Nothing to save',
       color: 'primary',
       textColor: 'white',
-      timeout: 2000
+      timeout: 2000,
     })
     return
   }
 
-  dialogConfirm('Do you want save')
+  void dialogConfirm('Do you want save')
     .then(async () => {
       Loading.show()
 
@@ -158,8 +156,13 @@ function onSave () {
 await new Promise((resolve) => {
   promiseWait = resolve
 
-  ensureFileExist()
-  file.value = workingFile.value as string
+  const _workingFile = workingFile?.value
+  if (typeof _workingFile === 'undefined') {
+    goToHome()
+    return
+  }
+
+  file.value = _workingFile
   void getFileContents()
 })
 

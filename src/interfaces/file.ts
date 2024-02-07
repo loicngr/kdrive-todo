@@ -7,6 +7,7 @@ export interface CustomFileStat extends FileStat {
   vType: string
   vName: string
 }
+
 export interface FileData {
   id: string
   title: string

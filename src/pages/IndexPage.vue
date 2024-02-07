@@ -49,7 +49,7 @@ const mainStore = useMainStore()
 const {
   ready,
   workingDir,
-  api
+  api,
 } = storeToRefs(mainStore)
 
 function dialogRedirectError () {
@@ -58,10 +58,10 @@ function dialogRedirectError () {
     caption: 'Your settings is wrong, or your folder doesn\'t not exist in your kDrive.',
     color: 'primary',
     textColor: 'white',
-    timeout: 7000
+    timeout: 7000,
   })
 
-  router.push({
+  void router.push({
     name: ROUTER_SETTINGS_NAME,
   })
 }
@@ -74,7 +74,7 @@ function reload () {
     return
   }
 
-  api?.value?.isPathExist(workingDir.value)
+  void api?.value?.isPathExist(workingDir.value)
     .then((e) => {
       ready.value = e
     })

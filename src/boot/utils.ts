@@ -8,7 +8,7 @@ declare module '@vue/runtime-core' {
 }
 
 export default boot(({
- app
+  app,
 }) => {
   app.config.globalProperties.$rules = Rules
 })

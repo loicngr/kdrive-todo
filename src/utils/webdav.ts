@@ -1,27 +1,29 @@
 import type {
   GetFileContentsOptions,
-  WebDAVClient
+  WebDAVClient,
 } from 'webdav'
-import { CustomFileStat } from 'src/interfaces/file'
+import { type CustomFileStat } from 'src/interfaces/file'
 
 export class WebDAVApi {
-  constructor(
+  constructor (
     public client: WebDAVClient,
-    public workingDir: string
+    public workingDir: string,
   ) {
   }
 
-  async isPathExist(path: string, addWorkingDir = false) {
-    return await this.client.exists(addWorkingDir ? this.getFilePath(path) : path)
+  async isPathExist (path: string, addWorkingDir = false) {
+    return await this.client.exists(addWorkingDir
+      ? this.getFilePath(path)
+      : path)
   }
 
-  async getDirectoryContents(dir?: string) {
+  async getDirectoryContents (dir?: string) {
     return await this.client.getDirectoryContents(dir ?? this.workingDir, {
       deep: false,
     }) as CustomFileStat[]
   }
 
-  async writeInFile(file: string, content: string): Promise<boolean> {
+  async writeInFile (file: string, content: string): Promise<boolean> {
     const filePath = this.getFilePath(file)
 
     // let lock: LockResponse | undefined
@@ -42,13 +44,13 @@ export class WebDAVApi {
     // }
   }
 
-  async deleteFile(file: string) {
-    return await this.client.deleteFile(this.getFilePath(file))
+  async deleteFile (file: string) {
+    await this.client.deleteFile(this.getFilePath(file))
   }
 
-  async getFileContents(
+  async getFileContents (
     file?: string,
-    format: GetFileContentsOptions['format'] = 'text'
+    format: GetFileContentsOptions['format'] = 'text',
   ) {
     if (typeof file === 'undefined') {
       console.error('File is undefined')
@@ -60,7 +62,7 @@ export class WebDAVApi {
     })
   }
 
-  getFilePath(file: string) {
+  getFilePath (file: string) {
     return `${this.workingDir}${file}`
   }
 }

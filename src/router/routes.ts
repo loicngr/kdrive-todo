@@ -1,36 +1,41 @@
-import { RouteRecordRaw } from 'vue-router'
+import { type RouteRecordRaw } from 'vue-router'
 import {
-  ROUTER_INDEX_NAME,
+  ROUTER_INDEX_NAME, ROUTER_NOTES_NAME,
   ROUTER_SETTINGS_NAME,
   ROUTER_TEXT_NAME,
-  ROUTER_TODO_NAME
+  ROUTER_TODO_NAME,
 } from 'src/constants'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
+    component: async () => await import('layouts/MainLayout.vue'),
     children: [
       {
         path: '',
         name: ROUTER_INDEX_NAME,
-        component: () => import('pages/IndexPage.vue')
+        component: async () => await import('pages/IndexPage.vue'),
+      },
+      {
+        path: 'notes',
+        name: ROUTER_NOTES_NAME,
+        component: async () => await import('pages/NotesPage.vue'),
       },
       {
         path: ROUTER_TODO_NAME,
         name: ROUTER_TODO_NAME,
-        component: () => import('pages/TodoPage.vue')
+        component: async () => await import('pages/TodoPage.vue'),
       },
       {
         path: ROUTER_TEXT_NAME,
         name: ROUTER_TEXT_NAME,
-        component: () => import('pages/TextPage.vue')
+        component: async () => await import('pages/TextPage.vue'),
       },
       {
         path: ROUTER_SETTINGS_NAME,
         name: ROUTER_SETTINGS_NAME,
-        component: () => import('pages/SettingsPage.vue')
-      }
+        component: async () => await import('pages/SettingsPage.vue'),
+      },
     ],
   },
 
@@ -38,8 +43,8 @@ const routes: RouteRecordRaw[] = [
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: async () => await import('pages/ErrorNotFound.vue'),
   },
-];
+]
 
 export default routes

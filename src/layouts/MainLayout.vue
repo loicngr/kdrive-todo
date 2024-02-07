@@ -32,13 +32,13 @@
 <script setup lang="ts">
 import {
   useRoute,
-  useRouter
+  useRouter,
 } from 'vue-router'
 import {
   ROUTER_INDEX_NAME,
   ROUTER_SETTINGS_NAME,
   ROUTER_TEXT_NAME,
-  ROUTER_TODO_NAME
+  ROUTER_TODO_NAME,
 } from 'src/constants'
 import { computed } from 'vue'
 
@@ -66,7 +66,7 @@ function goToSettings () {
     return
   }
 
-  router.replace({
+  void router.replace({
     name: ROUTER_SETTINGS_NAME,
   })
 }
@@ -76,13 +76,13 @@ function goToHome () {
     return
   }
 
-  router.replace({
+  void router.replace({
     name: ROUTER_INDEX_NAME,
   })
 }
 
 function goTo () {
-  return route.name !== ROUTER_INDEX_NAME
+  route.name !== ROUTER_INDEX_NAME
     ? goToHome()
     : goToSettings()
 }

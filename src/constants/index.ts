@@ -1,8 +1,10 @@
-import { FileData } from 'src/interfaces/file'
+import { type FileData } from 'src/interfaces/file'
 
 export const DEFAULT_FOLDER = 'WebDAVJS'
 
 export const ROUTER_INDEX_NAME = 'index'
+
+export const ROUTER_NOTES_NAME = 'notes'
 
 export const ROUTER_TODO_NAME = 'todo'
 
@@ -17,7 +19,7 @@ export const FILE_DATA_STATUS_DONE = 200
 export const FILE_DATA_STATUS_ARCHIVED = 300
 
 export const DEFAULT_TODOS = {
-  todos: []
+  todos: [],
 }
 
 export const DEFAULT_TODO: FileData = {
@@ -28,3 +30,6 @@ export const DEFAULT_TODO: FileData = {
   createdAt: '',
   updatedAt: null,
 }
+
+export const ITEM_TYPE_NOTE = 100
+export const ITEM_TYPE_TODO = 200

@@ -2,7 +2,9 @@
   <q-input
     v-model.trim="model"
     v-bind="mergedAttrs"
-    :type="hide ? 'password' : 'text'"
+    :type="hide
+      ? 'password'
+      : 'text'"
   >
     <template #append>
       <slot name="append-before" />
@@ -30,7 +32,7 @@ import {
   computed,
   ref,
   useAttrs,
-  useSlots
+  useSlots,
 } from 'vue'
 
 defineOptions({
@@ -39,7 +41,7 @@ defineOptions({
 
 const hide = ref(true)
 const model = defineModel<string | undefined>({
-  required: true
+  required: true,
 })
 
 const slots = useSlots()
@@ -50,7 +52,9 @@ const mergedAttrs = computed(() => ({
 }))
 
 const inputIcon = computed(() => {
-  return `fa fa-${hide.value ? 'eye-slash' : 'eye'}`
+  return `fa fa-${hide.value
+? 'eye-slash'
+: 'eye'}`
 })
 
 function toggleHide () {

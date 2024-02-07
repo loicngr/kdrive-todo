@@ -85,7 +85,9 @@
                 <q-toggle
                   class="col-6"
                   :model-value="todo.status === FILE_DATA_STATUS_DONE"
-                  @click="todo.status === FILE_DATA_STATUS_DONE ? todo.status = FILE_DATA_STATUS_TODO : todo.status = FILE_DATA_STATUS_DONE"
+                  @click="todo.status === FILE_DATA_STATUS_DONE
+                    ? todo.status = FILE_DATA_STATUS_TODO
+                    : todo.status = FILE_DATA_STATUS_DONE"
                 />
               </q-item-section>
 
@@ -100,7 +102,9 @@
                 >
                   <q-tooltip>
                     Created at: {{ dateTimeFormat(todo.createdAt) }} <br>
-                    Update at: {{ todo.updatedAt === null ? 'never' : dateTimeFormat(todo.updatedAt) }}
+                    Update at: {{ todo.updatedAt === null
+                      ? 'never'
+                      : dateTimeFormat(todo.updatedAt) }}
                   </q-tooltip>
                 </q-icon>
 
@@ -137,7 +141,12 @@
       @click="addTodo()"
     >
       <template #tooltip>
-        <q-tooltip self="top left" anchor="top left">Add todo</q-tooltip>
+        <q-tooltip
+          self="top left"
+          anchor="top left"
+        >
+          Add todo
+        </q-tooltip>
       </template>
     </add-button>
 
@@ -145,7 +154,12 @@
       @click="refresh()"
     >
       <template #tooltip>
-        <q-tooltip self="top left" anchor="top left">Reload file</q-tooltip>
+        <q-tooltip
+          self="top left"
+          anchor="top left"
+        >
+          Reload file
+        </q-tooltip>
       </template>
     </reload-button>
   </q-page-sticky>
@@ -157,7 +171,7 @@ import { useMainStore } from 'stores/main'
 import {
   computed,
   onBeforeUnmount,
-  ref
+  ref,
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
@@ -166,17 +180,17 @@ import {
   DEFAULT_TODOS,
   FILE_DATA_STATUS_DONE,
   FILE_DATA_STATUS_TODO,
-  ROUTER_INDEX_NAME
+  ROUTER_INDEX_NAME,
 } from 'src/constants'
-import { FileData } from 'src/interfaces/file'
+import { type FileData } from 'src/interfaces/file'
 import {
   Loading,
-  Notify, QList
+  Notify, QList,
 } from 'quasar'
 import {
   dialogConfirm,
   extractFilename,
-  randomTimeId
+  randomTimeId,
 } from 'src/utils'
 import cloneDeep from 'lodash/fp/cloneDeep'
 import isEqual from 'lodash/fp/isEqual'
@@ -194,25 +208,25 @@ useKeyboardListener({
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
       onSave()
-    }
+    },
   },
   'Control-r': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
       void refresh()
-    }
+    },
   },
   'Control-a': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
-      void addTodo()
-    }
-  }
+      addTodo()
+    },
+  },
 })
 
 const {
   workingFile,
-  workingTodoFileContent
+  workingTodoFileContent,
 } = storeToRefs(mainStore)
 
 const API = mainStore.apiOrThrow
@@ -223,13 +237,9 @@ const baseWorkingFileContent = ref<FileData[]>([])
 let promiseWait: CallableFunction | undefined
 let attemptFileGetContents = 0
 
-const {
- option
-} = useSortable(listRef, workingTodoFileContent, {
+useSortable(listRef, workingTodoFileContent, {
   handle: '.handle',
 })
-
-option('animation', 200)
 
 const hasDiff = computed(() => {
   return !isEqual(workingTodoFileContent.value, baseWorkingFileContent.value)
@@ -256,13 +266,18 @@ async function getFileContents () {
     return
   }
 
-  const fileContent = await API.getFileContents(file.value, 'text') as string | undefined
+  const fileContent = ((await API.getFileContents(file.value, 'text')) ?? '') as string
 
   if (typeof promiseWait === 'function') {
     promiseWait()
   }
 
-  const parsedJson = (JSON.parse((fileContent ?? '') || '{}') as { todos?: FileData[] })?.todos
+  const fileContentLength = fileContent.length
+  const parsedJson = (JSON.parse(
+    fileContentLength === 0
+      ? '{}'
+      : fileContent,
+  ) as { todos?: FileData[] })?.todos
 
   if (typeof parsedJson === 'undefined') {
     try {
@@ -285,8 +300,8 @@ async function getFileContents () {
   attemptFileGetContents = 0
 }
 
-function onDeleteTodo(todo: FileData) {
-  dialogConfirm('Delete this element ?')
+function onDeleteTodo (todo: FileData) {
+  void dialogConfirm('Delete this element ?')
     .then(() => {
       const elementIndex = workingTodoFileContent.value.findIndex((c) => c.id === todo.id)
 
@@ -296,7 +311,7 @@ function onDeleteTodo(todo: FileData) {
     })
 }
 
-function addTodo() {
+function addTodo () {
   workingTodoFileContent.value.push({
     ...DEFAULT_TODO,
     id: randomTimeId(),
@@ -305,15 +320,8 @@ function addTodo() {
   })
 }
 
-function ensureFileExist() {
-  if (typeof workingFile?.value === 'undefined') {
-    goToHome()
-    return
-  }
-}
-
 function goToHome () {
-  router.replace({
+  void router.replace({
     name: ROUTER_INDEX_NAME,
   })
 }
@@ -324,12 +332,12 @@ function onSave () {
       message: 'Nothing to save',
       color: 'primary',
       textColor: 'white',
-      timeout: 2000
+      timeout: 2000,
     })
     return
   }
 
-  dialogConfirm('Do you want save')
+  void dialogConfirm('Do you want save')
     .then(async () => {
       const actual = cloneDeep(workingTodoFileContent.value)
       const base = keyBy(cloneDeep(baseWorkingFileContent.value), 'id')
@@ -339,15 +347,15 @@ function onSave () {
 
       actual.forEach((todo) => {
         if (
-          typeof base[todo.id] !== 'undefined'
-          && !isEqual(todo, base[todo.id])
+          typeof base[todo.id] !== 'undefined' &&
+          !isEqual(todo, base[todo.id])
         ) {
           todo.updatedAt = dateNow.toString()
         }
       })
 
       const status = await API.writeInFile(file.value, JSON.stringify({
-        todos: actual
+        todos: actual,
       }))
 
       if (status) {
@@ -361,8 +369,12 @@ function onSave () {
 await new Promise((resolve) => {
   promiseWait = resolve
 
-  ensureFileExist()
-  file.value = workingFile.value as string
+  if (typeof workingFile?.value === 'undefined') {
+    goToHome()
+    return
+  }
+
+  file.value = workingFile.value
   void getFileContents()
 })
 

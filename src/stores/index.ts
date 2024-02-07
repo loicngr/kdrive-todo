@@ -1,6 +1,6 @@
 import { store } from 'quasar/wrappers'
 import { createPinia } from 'pinia'
-import { Router } from 'vue-router'
+import { type Router } from 'vue-router'
 import persistPlugin from 'stores/plugins/persistPlugin'
 
 /*
@@ -10,7 +10,7 @@ import persistPlugin from 'stores/plugins/persistPlugin'
  */
 declare module 'pinia' {
   export interface PiniaCustomProperties {
-    readonly router: Router;
+    readonly router: Router
   }
 }
 

@@ -1,4 +1,4 @@
-import { CustomFileStat } from 'src/interfaces/file'
+import { type CustomFileStat } from 'src/interfaces/file'
 
 export interface ContextMenuOption {
   label: string

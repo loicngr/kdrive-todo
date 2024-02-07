@@ -138,8 +138,8 @@
 
 <script setup lang="ts">
 import {
-  DEFAULT_WEBDAV_STATE,
-  useSettingsStore
+  type DEFAULT_WEBDAV_STATE,
+  useSettingsStore,
 } from 'stores/settings'
 import {
   onBeforeMount,
@@ -147,7 +147,7 @@ import {
 } from 'vue'
 import {
   Notify,
-  QForm
+  QForm,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import cloneDeep from 'lodash/fp/cloneDeep'
@@ -168,13 +168,13 @@ useKeyboardListener({
   'Control-s': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
-      onSubmit()
-    }
-  }
+      void onSubmit()
+    },
+  },
 })
 
 async function onSubmit () {
-  const isValid = await formRef.value?.validate()
+  const isValid = (await formRef.value?.validate()) ?? true
 
   if (!isValid) {
     Notify.create({

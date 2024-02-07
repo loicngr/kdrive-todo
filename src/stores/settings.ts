@@ -10,8 +10,8 @@ export const DEFAULT_WEBDAV_STATE: {
 } = {
   id: undefined,
   dir: DEFAULT_FOLDER,
-  username:  undefined,
-  password:  undefined,
+  username: undefined,
+  password: undefined,
 }
 
 export interface State {
@@ -22,7 +22,7 @@ export const useSettingsStore = defineStore({
   id: 'settings',
 
   state: (): State => ({
-    webdav: cloneDeep(DEFAULT_WEBDAV_STATE)
+    webdav: cloneDeep(DEFAULT_WEBDAV_STATE),
   }),
 
   getters: {
@@ -37,7 +37,7 @@ export const useSettingsStore = defineStore({
         webDAV.username.length > 0 &&
         webDAV.password.length > 0 &&
         webDAV.dir.length > 0
-    }
+    },
   },
 
   actions: {},

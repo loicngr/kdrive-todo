@@ -37,3 +37,16 @@
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
     opacity: 0;
 }
+
+.full-popup {
+    background: $dark-opacity;
+    transition: opacity .5s;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .q-popup-edit__buttons button {
+        font-weight: bold;
+    }
+}

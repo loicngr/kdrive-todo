@@ -1,10 +1,10 @@
-import { CustomFileStat } from 'src/interfaces/file'
+import { type CustomFileStat } from 'src/interfaces/file'
 import { dateTimeFormat } from 'src/utils/date'
 import deburr from 'lodash/fp/deburr'
 import { Dialog } from 'quasar'
 import type { FileStat } from 'webdav'
 
-export function generateIdFromFile(item: CustomFileStat): string {
+export function generateIdFromFile (item: CustomFileStat): string {
   const date = dateTimeFormat(item.lastmod).replaceAll('/', '_')
   const filename = item.basename
   const content = deburr(filename.concat(date)).replaceAll(' ', '_')
@@ -12,20 +12,20 @@ export function generateIdFromFile(item: CustomFileStat): string {
   return btoa(content)
 }
 
-export function downloadBlob(blob: Blob, name: string) {
+export function downloadBlob (blob: Blob, name: string) {
   const link = document.createElement('a')
   link.href = URL.createObjectURL(blob)
   link.download = name
   link.click()
 }
 
-export function dialogConfirm (message: string) {
-  return new Promise((resolve, reject) => {
+export async function dialogConfirm (message: string) {
+  return await new Promise((resolve, reject) => {
     Dialog.create({
       title: 'Confirm',
       message,
       cancel: true,
-      persistent: true
+      persistent: true,
     })
       .onOk(resolve)
       .onCancel(reject)
@@ -57,12 +57,10 @@ export function getDirectoryContentItemName (item: CustomFileStat) {
 export class HandleKeyboardListener {
   private readonly handledFunction: (e: KeyboardEvent) => void
 
-  constructor(
-    public context?: {
-      [key: string]: {
-        callback: (e: KeyboardEvent) => void
-      }
-    },
+  constructor (
+    public context?: Record<string, {
+      callback: (e: KeyboardEvent) => void
+    }>,
   ) {
     this.handledFunction = this.handleListenerKeyDown.bind({
       context,
@@ -103,7 +101,6 @@ export class HandleKeyboardListener {
     ref.removeEventListener('keydown', this.handledFunction, true)
   }
 }
-
 
 export function randomTimeId (length = 10) {
   return Math.floor(Math.random() * Date.now()).toString(length)

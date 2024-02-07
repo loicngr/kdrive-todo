@@ -8,7 +8,7 @@
       style="overflow: auto; min-height: 200px; max-height: 200px; min-width: 200px; max-width: 200px;"
       @dblclick="onDblClick($event, item)"
       @mouseenter="onMouseEnter($event, item)"
-      @mouseleave="onMouseLeave($event)"
+      @mouseleave="onMouseLeave()"
     >
       <q-card-section class="col row items-center justify-center">
         {{ item.vName }}
@@ -40,7 +40,6 @@
       style="min-width: 100px;"
       dense
     >
-
       <template v-if="contextMenuOptions.length === 0">
         <q-item
           dense
@@ -75,7 +74,12 @@
       @click="newFileDialog()"
     >
       <template #tooltip>
-        <q-tooltip self="top left" anchor="top left">Create a new file</q-tooltip>
+        <q-tooltip
+          self="top left"
+          anchor="top left"
+        >
+          Create a new file
+        </q-tooltip>
       </template>
     </add-button>
 
@@ -83,7 +87,12 @@
       @click="refreshDirectoryContents()"
     >
       <template #tooltip>
-        <q-tooltip self="top left" anchor="top left">Reload directory</q-tooltip>
+        <q-tooltip
+          self="top left"
+          anchor="top left"
+        >
+          Reload directory
+        </q-tooltip>
       </template>
     </reload-button>
   </q-page-sticky>
@@ -98,26 +107,26 @@ import {
 import {
   Loading,
   QMenu,
-  useQuasar
+  useQuasar,
 } from 'quasar'
 import { dateTimeFormat } from 'src/utils/date'
-import { CustomFileStat } from 'src/interfaces/file'
+import { type CustomFileStat } from 'src/interfaces/file'
 import { useContextMenu } from 'src/composables/contextMenu'
 import {
   dialogConfirm,
   directoryContentItemIsNote,
   directoryContentItemIsTodo,
   downloadBlob,
-  getDirectoryContentItemName
+  getDirectoryContentItemName,
 } from 'src/utils'
-import { ContextMenuOption } from 'src/interfaces/contextMenu'
+import { type ContextMenuOption } from 'src/interfaces/contextMenu'
 import isArrayBuffer from 'lodash/isArrayBuffer'
 import { useMainStore } from 'stores/main'
 import { useRouter } from 'vue-router'
 import {
   DEFAULT_TODOS,
   ROUTER_TEXT_NAME,
-  ROUTER_TODO_NAME
+  ROUTER_TODO_NAME,
 } from 'src/constants'
 import ReloadButton from 'components/ReloadButton.vue'
 import { useKeyboardListener } from 'src/composables/keyboardListener'
@@ -134,14 +143,14 @@ useKeyboardListener({
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
       void refreshDirectoryContents()
-    }
+    },
   },
   'Control-a': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
-      void newFileDialog()
-    }
-  }
+      newFileDialog()
+    },
+  },
 })
 
 const API = mainStore.apiOrThrow
@@ -179,7 +188,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     callback: () => {
       closeMenu()
       newFileDialog()
-    }
+    },
   },
   {
     value: 'open_todo_list',
@@ -188,7 +197,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     callback: (ctx) => {
       closeMenu()
       openTodoFile(ctx)
-    }
+    },
   },
   {
     value: 'open_text',
@@ -197,7 +206,7 @@ const baseContextMenuOptions: ContextMenuOption[] = [
     callback: (ctx) => {
       closeMenu()
       openTextFile(ctx)
-    }
+    },
   },
   {
     value: 'download',
@@ -211,18 +220,18 @@ const baseContextMenuOptions: ContextMenuOption[] = [
       }
 
       Loading.show()
-      API.getFileContents(ctx.basename, 'binary')
+      void API.getFileContents(ctx.basename, 'binary')
         .then((data) => {
           if (isArrayBuffer(data)) {
             const blob = new Blob([data], {
-              type: ctx.mime
+              type: ctx.mime,
             })
 
             Loading.hide()
             downloadBlob(blob, ctx.basename)
           }
         })
-    }
+    },
   },
   {
     value: 'delete',
@@ -235,29 +244,29 @@ const baseContextMenuOptions: ContextMenuOption[] = [
         return
       }
 
-      dialogConfirm('Delete this file ?')
+      void dialogConfirm('Delete this file ?')
         .then(() => {
           Loading.show()
 
-          API.deleteFile(ctx.basename)
+          void API.deleteFile(ctx.basename)
             .finally(() => {
               Loading.hide()
 
               void refreshDirectoryContents()
             })
         })
-    }
-  }
+    },
+  },
 ]
 
 const {
   closeMenu,
   contextMenuItem,
   contextMenuShow,
-  contextMenuOptions
+  contextMenuOptions,
 } = useContextMenu(baseContextMenuOptions)
 
-async function refreshDirectoryContents(dir?: string) {
+async function refreshDirectoryContents (dir?: string) {
   Loading.show()
 
   directoryContents.value = await API.getDirectoryContents(dir)
@@ -276,32 +285,32 @@ function newFileDialog () {
       items: [
         {
           label: 'Text',
-          value: 'text'
+          value: 'text',
         },
         {
           label: 'Todo',
-          value: 'todo'
+          value: 'todo',
         },
-      ]
+      ],
     },
     cancel: true,
-    persistent: true
+    persistent: true,
   }).onOk((data) => {
     if (data === 'todo') {
-      void createNewTodoFile()
+      createNewTodoFile()
       return
     }
 
-    void createNewTextFile()
+    createNewTextFile()
   })
 }
 
-function createNewTodoFile() {
+function createNewTodoFile () {
   $q.dialog({
     component: DialogCreateTodoFile,
   }).onOk((data: { filename: string }) => {
     const {
-      filename
+      filename,
     } = data
 
     if (filename.trim().length === 0) {
@@ -309,9 +318,9 @@ function createNewTodoFile() {
     }
 
     Loading.show()
-    API.writeInFile(filename.concat('.json'), JSON.stringify(DEFAULT_TODOS))
+    void API.writeInFile(filename.concat('.json'), JSON.stringify(DEFAULT_TODOS))
       .then(() => {
-        refreshDirectoryContents()
+        void refreshDirectoryContents()
       })
       .finally(() => {
         Loading.hide()
@@ -319,12 +328,12 @@ function createNewTodoFile() {
   })
 }
 
-function createNewTextFile() {
+function createNewTextFile () {
   $q.dialog({
     component: DialogCreateTextFile,
   }).onOk((data: { filename: string }) => {
     const {
-      filename
+      filename,
     } = data
 
     if (filename.trim().length === 0) {
@@ -332,9 +341,9 @@ function createNewTextFile() {
     }
 
     Loading.show()
-    API.writeInFile(filename.concat('.txt'), '')
+    void API.writeInFile(filename.concat('.txt'), '')
       .then(() => {
-        refreshDirectoryContents()
+        void refreshDirectoryContents()
       })
       .finally(() => {
         Loading.hide()
@@ -342,17 +351,17 @@ function createNewTextFile() {
   })
 }
 
-function onMouseEnter(e: MouseEvent, item: CustomFileStat) {
+function onMouseEnter (e: MouseEvent, item: CustomFileStat) {
   if (typeof contextMenuItem.value !== 'undefined' && contextMenuShow.value) {
     closeMenu()
   }
 
-  nextTick(() => {
+  void nextTick(() => {
     contextMenuItem.value = item
   })
 }
 
-function onDblClick(e: MouseEvent, item: CustomFileStat) {
+function onDblClick (e: MouseEvent, item: CustomFileStat) {
   if (item.isTodo) {
     openTodoFile(item)
     return
@@ -360,12 +369,11 @@ function onDblClick(e: MouseEvent, item: CustomFileStat) {
 
   if (item.isNote) {
     openTextFile(item)
-    return
   }
 }
 
-function onMouseLeave(/** e: MouseEvent */) {
-  nextTick(() => {
+function onMouseLeave (/** e: MouseEvent */) {
+  void nextTick(() => {
     if (!contextMenuShow.value) {
       contextMenuItem.value = undefined
     }
@@ -379,8 +387,8 @@ function openTodoFile (item?: CustomFileStat) {
 
   mainStore.setWorkingFile(item.basename)
 
-  router.push({
-    name: ROUTER_TODO_NAME
+  void router.push({
+    name: ROUTER_TODO_NAME,
   })
 }
 
@@ -391,8 +399,8 @@ function openTextFile (item?: CustomFileStat) {
 
   mainStore.setWorkingFile(item.basename)
 
-  router.push({
-    name: ROUTER_TEXT_NAME
+  void router.push({
+    name: ROUTER_TEXT_NAME,
   })
 }
 </script>

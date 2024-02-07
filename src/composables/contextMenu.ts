@@ -1,23 +1,23 @@
 import {
   computed,
   nextTick,
-  ref
+  ref,
 } from 'vue'
-import { ContextMenuOption } from 'src/interfaces/contextMenu'
-import { CustomFileStat } from 'src/interfaces/file'
+import { type ContextMenuOption } from 'src/interfaces/contextMenu'
+import { type CustomFileStat } from 'src/interfaces/file'
 
-export function useContextMenu(baseContextMenuOptions: ContextMenuOption[]) {
+export function useContextMenu (baseContextMenuOptions: ContextMenuOption[]) {
   const contextMenuShow = ref(false)
   const contextMenuItem = ref<CustomFileStat | undefined>(undefined)
 
   const contextMenuOptions = computed((): ContextMenuOption[] => {
     return baseContextMenuOptions.filter((o) => typeof o.if === 'function'
       ? o.if(contextMenuItem.value)
-      : o.if
+      : o.if,
     )
   })
 
-  function closeMenu() {
+  function closeMenu () {
     contextMenuItem.value = undefined
 
     void nextTick(() => {
@@ -29,6 +29,6 @@ export function useContextMenu(baseContextMenuOptions: ContextMenuOption[]) {
     closeMenu,
     contextMenuShow,
     contextMenuItem,
-    contextMenuOptions
+    contextMenuOptions,
   }
 }

@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
 import {
   createClient,
-  WebDAVClient
+  type WebDAVClient,
 } from 'webdav'
 import { WebDAVApi } from 'src/utils/webdav'
-import { FileData } from 'src/interfaces/file'
+import { type FileData } from 'src/interfaces/file'
 import { useSettingsStore } from 'stores/settings'
 
 interface State {
@@ -27,7 +27,7 @@ export const useMainStore = defineStore({
     workingTodoFileContent: [],
     workingFileContent: '',
     _workingFile: undefined,
-    api: undefined
+    api: undefined,
   }),
 
   getters: {
@@ -43,7 +43,7 @@ export const useMainStore = defineStore({
 
     workingFile (): string | undefined {
       return this._workingFile
-    }
+    },
   },
 
   actions: {
@@ -56,7 +56,7 @@ export const useMainStore = defineStore({
       this._workingFile = file
     },
 
-    async connect() {
+    connect () {
       if (typeof this.client !== 'undefined') {
         return
       }
@@ -76,11 +76,11 @@ export const useMainStore = defineStore({
         `https://${webDAV.id}.connect.kdrive.infomaniak.com/${webDAV.dir}`,
         {
           username: webDAV.username,
-          password: webDAV.password
-        }
+          password: webDAV.password,
+        },
       )
 
       this.api = new WebDAVApi(this.client, this.workingDir)
-    }
+    },
   },
 })
