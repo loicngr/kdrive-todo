@@ -4,6 +4,7 @@ export interface Item {
   id: string
   title: string
   content: string | Todo[]
+  tmpContent?: string | Todo[]
   createdAt: string
   updatedAt: string
   status: number

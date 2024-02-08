@@ -1,49 +1,52 @@
 <template>
   <div class="q-pa-md col-12 row items-start q-gutter-md">
     <q-card
-      v-for="note in notes"
+      v-for="(note, loopIndex) in notes"
       :key="note.id"
-      class="card-note"
+      class="card-note row"
       flat
       bordered
     >
-      <q-card-section>
-        <q-field
-          :model-value="note.title"
-          class="overflow-hidden"
-        >
-          <template #control>
-            {{ note.title }}
-          </template>
+      <div class="col-12 hover-lighten">
+        <q-card-section>
+          {{ note.title }}
+        </q-card-section>
 
-          <q-popup-edit
-            v-slot="scopePopupEdit"
-            v-model="note.title"
-            buttons
-            label-set="Save"
-            label-cancel="Cancel"
-            anchor="center middle"
-          >
-            <q-input
-              v-model="scopePopupEdit.value"
-              min-height="5rem"
-              dense
-              autofocus
-              stack-label
-              maxlength="255"
-              label="Title"
-              @keyup.enter="scopePopupEdit.set"
-            />
-          </q-popup-edit>
-        </q-field>
-      </q-card-section>
+        <q-separator
+          inset
+        />
 
-      <div>
-        <q-card-section
-          class="q-pt-none no-pointer-events"
+        <q-popup-edit
+          v-slot="scopePopupEdit"
+          v-model="note.title"
+          buttons
+          label-set="Save"
+          label-cancel="Cancel"
+          anchor="center middle"
+          :validate="noteTitleValidation"
+          @hide="onNoteTitleHide(note.title, loopIndex)"
         >
-          <item-note
+          <q-input
+            v-model.trim="scopePopupEdit.value"
+            type="text"
+            hint="Title"
+            dense
+            autofocus
+            :error="errorNoteTitle.status"
+            :error-message="errorNoteTitle.message"
+            maxlength="255"
+            @keyup.enter="scopePopupEdit.set"
+          />
+        </q-popup-edit>
+      </div>
+
+      <div
+        class="col-12 hover-lighten"
+      >
+        <q-card-section>
+          <item-note-preview-content
             :model-value="note.content"
+            class="no-pointer-events"
           />
         </q-card-section>
 
@@ -62,31 +65,31 @@
         >
           <q-card
             flat
+            class="row justify-center"
           >
             <q-card-section
               v-if="note.type === ITEM_TYPE_TODO"
+              class="col-6"
             >
-              <q-input
+              <item-note-todo
                 v-model="scopePopupEdit.value"
-                min-height="5rem"
-                dense
-                autofocus
-                stack-label
-                maxlength="255"
-                label="Content"
-                @keyup.enter="scopePopupEdit.set"
               />
             </q-card-section>
 
-            <q-card-section v-else>
+            <q-card-section
+              v-else
+              class="col-12"
+            >
               <q-editor
-                v-model="scopePopupEdit.value"
+                :model-value="scopePopupEdit.value"
                 autofocus
+                placeholder="Content"
                 height="80vh"
                 max-height="1200px"
                 :toolbar="editor.toolbar"
                 content-class=""
                 @keyup.enter.stop
+                @update:model-value="note.tmpContent = $event"
               />
             </q-card-section>
           </q-card>
@@ -106,19 +109,52 @@ import {
   ITEM_TYPE_NOTE,
   ITEM_TYPE_TODO,
 } from 'src/constants'
-import ItemNote from 'components/ItemNote.vue'
 import { QPopupEdit } from 'quasar'
 import { useWindowSize } from '@vueuse/core'
+import ItemNotePreviewContent from 'components/ItemNotePreviewContent.vue'
+import ItemNoteTodo from 'components/ItemNoteTodo.vue'
 
 const notes = ref<Item[]>([
   {
     id: '1',
     title: 'todo list 1',
-    content: [{
-      id: '1',
-      content: 'to do 1',
-      done: false,
-    }],
+    content: [
+      {
+        id: '1',
+        content: 'to do 1',
+        done: true,
+      },
+      {
+        id: '2',
+        content: 'to do 2',
+        done: false,
+      },
+      {
+        id: '3',
+        content: 'to do 3',
+        done: false,
+      },
+      {
+        id: '4',
+        content: 'to do 4',
+        done: false,
+      },
+      {
+        id: '5',
+        content: 'to do 5',
+        done: false,
+      },
+      {
+        id: '6',
+        content: 'to do 6',
+        done: false,
+      },
+      {
+        id: '7',
+        content: 'to do 7',
+        done: false,
+      },
+    ],
     createdAt: '',
     updatedAt: '',
     status: 100,
@@ -149,6 +185,10 @@ const {
 } = useWindowSize()
 
 const popupEditStyle = ref({})
+const errorNoteTitle = ref({
+  status: false,
+  message: '',
+})
 
 function computePopupEditStyle () {
   popupEditStyle.value = {
@@ -158,6 +198,27 @@ function computePopupEditStyle () {
     maxWidth: windowWidth.value.toString().concat('px !important'),
     height: windowHeight.value.toString().concat('px'),
     maxHeight: windowHeight.value.toString().concat('px !important'),
+  }
+}
+
+function noteTitleValidation (val: string | undefined) {
+  if (typeof val !== 'string' || val.length === 0) {
+    errorNoteTitle.value.status = true
+    errorNoteTitle.value.message = 'Not valid'
+    return false
+  }
+
+  errorNoteTitle.value.status = false
+  errorNoteTitle.value.message = ''
+  return true
+}
+
+function onNoteTitleHide (
+  val: string | undefined,
+  loopIndex: number,
+) {
+  if (!noteTitleValidation(val)) {
+    notes.value[loopIndex].title = 'Note title'
   }
 }
 
@@ -174,5 +235,7 @@ main()
   max-width: 300px;
   min-height: 50px;
   max-height: 300px;
+
+  overflow: hidden;
 }
 </style>

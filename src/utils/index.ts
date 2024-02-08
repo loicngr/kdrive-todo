@@ -3,6 +3,9 @@ import { dateTimeFormat } from 'src/utils/date'
 import deburr from 'lodash/fp/deburr'
 import { Dialog } from 'quasar'
 import type { FileStat } from 'webdav'
+import {
+  shallowRef, triggerRef,
+} from 'vue'
 
 export function generateIdFromFile (item: CustomFileStat): string {
   const date = dateTimeFormat(item.lastmod).replaceAll('/', '_')
@@ -104,4 +107,23 @@ export class HandleKeyboardListener {
 
 export function randomTimeId (length = 10) {
   return Math.floor(Math.random() * Date.now()).toString(length)
+}
+
+export function createSignal <V = unknown> (
+  value: V,
+  options?: { equals: boolean },
+) {
+  const r = shallowRef(value)
+
+  const get = (): V => r.value
+
+  const set = (v: V) => {
+    r.value = typeof v === 'function'
+      ? v(r.value)
+      : v
+
+    if (options?.equals === false) triggerRef(r)
+  }
+
+  return [get, set]
 }

@@ -50,3 +50,14 @@
         font-weight: bold;
     }
 }
+
+.hover-lighten {
+    &:hover {
+        transition: ease-in-out .3s;
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    :hover {
+        cursor: pointer;
+    }
+}
