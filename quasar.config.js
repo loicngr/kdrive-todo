@@ -25,7 +25,7 @@ module.exports = configure(function (/* ctx */) {
     },
 
     bin: {
-      linuxAndroidStudio: '',
+      // linuxAndroidStudio: '/home/$USER/.local/share/JetBrains/Toolbox/apps/android-studio/bin/studio.sh',
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/prefetch-feature

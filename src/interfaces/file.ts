@@ -1,18 +1,6 @@
-import type { FileStat } from 'webdav'
+import type { Item } from 'src/interfaces/item'
 
-export interface CustomFileStat extends FileStat {
-  isFile: boolean
-  isTodo: boolean
-  isNote: boolean
-  vType: string
-  vName: string
-}
-
-export interface FileData {
-  id: string
-  title: string
-  content: string
-  status: number
-  createdAt: string
-  updatedAt: string | null
+export interface NotesFile {
+  items: Item[]
+  version: string
 }

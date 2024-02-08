@@ -67,6 +67,8 @@
               class="col-12 col-md-6 error-white"
               input-class="text-white"
               filled
+              :hide="false"
+              default-type="email"
               maxlength="255"
               label-color="white"
               color="white"

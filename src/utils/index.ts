@@ -1,19 +1,8 @@
-import { type CustomFileStat } from 'src/interfaces/file'
-import { dateTimeFormat } from 'src/utils/date'
-import deburr from 'lodash/fp/deburr'
 import { Dialog } from 'quasar'
-import type { FileStat } from 'webdav'
 import {
-  shallowRef, triggerRef,
+  shallowRef,
+  triggerRef,
 } from 'vue'
-
-export function generateIdFromFile (item: CustomFileStat): string {
-  const date = dateTimeFormat(item.lastmod).replaceAll('/', '_')
-  const filename = item.basename
-  const content = deburr(filename.concat(date)).replaceAll(' ', '_')
-
-  return btoa(content)
-}
 
 export function downloadBlob (blob: Blob, name: string) {
   const link = document.createElement('a')
@@ -22,39 +11,18 @@ export function downloadBlob (blob: Blob, name: string) {
   link.click()
 }
 
-export async function dialogConfirm (message: string) {
+export async function dialogConfirm (message: string, opt = {}) {
   return await new Promise((resolve, reject) => {
     Dialog.create({
       title: 'Confirm',
       message,
       cancel: true,
       persistent: true,
+      ...opt,
     })
       .onOk(resolve)
       .onCancel(reject)
   })
-}
-
-export function extractFilename (filename: string) {
-  const lastIndexOfPoint = filename.lastIndexOf('.')
-
-  return lastIndexOfPoint === -1
-    ? filename
-    : filename.slice(0, lastIndexOfPoint)
-}
-
-export function directoryContentItemIsTodo (item: FileStat) {
-  return item.type === 'file' && item.basename.endsWith('.json')
-}
-
-export function directoryContentItemIsNote (item: FileStat) {
-  return item.type === 'file' && item.basename.endsWith('.txt')
-}
-
-export function getDirectoryContentItemName (item: CustomFileStat) {
-  return item.isFile
-    ? extractFilename(item.basename)
-    : item.basename
 }
 
 export class HandleKeyboardListener {

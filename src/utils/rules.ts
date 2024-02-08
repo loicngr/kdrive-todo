@@ -21,4 +21,8 @@ export const Rules = {
   string (val: string | undefined) {
     return typeof val === 'string' || 'Required'
   },
+
+  validNewString (val: string | undefined) {
+    return (val?.length ?? 0) >= 1 || 'To small'
+  },
 }

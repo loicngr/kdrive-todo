@@ -1,8 +1,13 @@
 <template>
-  <q-page class="row items-center justify-evenly">
-    <template v-if="ready">
+  <q-page
+    class="row"
+    :class="{
+      'items-center justify-evenly': !localReady,
+    }"
+  >
+    <template v-if="localReady">
       <suspense>
-        <list-directory-contents />
+        <list-notes-view />
 
         <template #fallback>
           <q-spinner-dots
@@ -36,54 +41,92 @@
 </template>
 
 <script lang="ts" setup>
-import ListDirectoryContents from 'components/ListDirectoryContents.vue'
 import { useMainStore } from 'stores/main'
 import { storeToRefs } from 'pinia'
-import { Notify } from 'quasar'
+import { Loading } from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTER_SETTINGS_NAME } from 'src/constants'
+import ListNotesView from 'components/ListNotesView.vue'
+import { useSettingsStore } from 'stores/settings'
+import { ref } from 'vue'
 
 const router = useRouter()
 const mainStore = useMainStore()
+const settingsStore = useSettingsStore()
+
+const localReady = ref(false)
 
 const {
   ready,
-  workingDir,
+  filePath,
   api,
 } = storeToRefs(mainStore)
 
-function dialogRedirectError () {
-  Notify.create({
-    message: 'Oops',
-    caption: 'Your settings is wrong, or your folder doesn\'t not exist in your kDrive.',
-    color: 'primary',
-    textColor: 'white',
-    timeout: 7000,
-  })
+const {
+  webdav,
+} = storeToRefs(settingsStore)
 
-  void router.push({
-    name: ROUTER_SETTINGS_NAME,
-  })
+async function dialogRedirectError () {
+  const status = await api?.value?.createNotesFile(
+    `
+    The file "notes.json" doesn't exist in your kDrive.<br>
+    All your notes will be saved in this file.<br>
+    Would you like to create it?
+    `,
+    reload,
+  ) ?? false
+
+  if (!status) {
+    void router.push({
+      name: ROUTER_SETTINGS_NAME,
+    })
+  }
 }
 
-function reload () {
-  mainStore.connect()
+async function dialogRedirectErrorFolder () {
+  let status = (await api?.value?.createNotesFolder(
+    `
+    The folder "${webdav.value.dir}" doesn't exist in your kDrive.<br>
+    All your notes will be saved in this folder.<br>
+    Would you like to create it?
+    `,
+  )) ?? false
 
-  if (typeof api?.value === 'undefined') {
-    dialogRedirectError()
+  if (!status) {
+    void router.push({
+      name: ROUTER_SETTINGS_NAME,
+    })
+
     return
   }
 
-  void api?.value?.isPathExist(workingDir.value)
+  status = (await api?.value?._createNotesFile()) ?? false
+
+  if (status) {
+    void reload()
+  }
+}
+
+async function reload () {
+  Loading.show()
+  await mainStore.connect()
+  Loading.hide()
+
+  if (!ready.value) {
+    void dialogRedirectErrorFolder()
+    return
+  }
+
+  void api?.value?.isPathExist(filePath.value)
     .then((e) => {
-      ready.value = e
+      localReady.value = e
     })
     .finally(() => {
-      if (!ready.value) {
-        dialogRedirectError()
+      if (!localReady.value) {
+        void dialogRedirectError()
       }
     })
 }
 
-reload()
+void reload()
 </script>
