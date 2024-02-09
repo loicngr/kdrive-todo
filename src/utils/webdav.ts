@@ -85,8 +85,14 @@ export class WebDAVApi {
           Loading.show()
 
           try {
+            let baseServer = `https://${webDAV.id}.connect.kdrive.infomaniak.com`
+
+            if (typeof webDAV.customServer === 'string') {
+              baseServer = webDAV.customServer
+            }
+
             this.client = createClient(
-              `https://${webDAV.id}.connect.kdrive.infomaniak.com`,
+              baseServer,
               {
                 username: webDAV.username,
                 password: webDAV.password,

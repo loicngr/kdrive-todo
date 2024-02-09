@@ -7,7 +7,7 @@
         flat
       >
         <q-card-section class="text-h4">
-          Settings
+          Setting<span @click="testGooglePlayConsole">s</span>
         </q-card-section>
 
         <q-separator
@@ -62,7 +62,12 @@
             <hidden-input
               v-model.trim="webDAV.username"
               label="kDrive email *"
-              :rules="[$rules.required, $rules.string, $rules.validEmail]"
+              :rules="[
+                $rules.required,
+                typeof webDAV.customServer !== 'undefined'
+                  ? $rules.string
+                  : $rules.validEmail
+              ]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
@@ -149,7 +154,7 @@ import {
 } from 'vue'
 import {
   Notify,
-  QForm,
+  QForm, useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import cloneDeep from 'lodash/fp/cloneDeep'
@@ -158,6 +163,7 @@ import SaveButton from 'components/SaveButton.vue'
 import HiddenInput from 'components/HiddenInput.vue'
 
 const settingsStore = useSettingsStore()
+const $q = useQuasar()
 
 const {
   webdav,
@@ -196,6 +202,27 @@ async function onSubmit () {
     color: 'primary',
     textColor: 'white',
     timeout: 2000,
+  })
+}
+
+function testGooglePlayConsole () {
+  $q.dialog({
+    title: `WebDAV server`,
+    message: `Custom WebDAV server for google test`,
+    prompt: {
+      model: cloneDeep(webdav.value.customServer ?? ''),
+      type: 'text',
+      required: true,
+    },
+    cancel: true,
+    persistent: true,
+  }).onOk((data) => {
+    if (typeof data === 'string' && data.startsWith('https://')) {
+      webdav.value.customServer = data.trim()
+      return
+    }
+
+    webDAV.value.customServer = undefined
   })
 }
 

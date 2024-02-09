@@ -52,18 +52,34 @@ export const useMainStore = defineStore({
         return false
       }
 
-      this.client = createClient(
-        `https://${webDAV.id}.connect.kdrive.infomaniak.com/${webDAV.dir}`,
-        {
-          username: webDAV.username,
-          password: webDAV.password,
-        },
-      )
+      let baseServer = `https://${webDAV.id}.connect.kdrive.infomaniak.com`
 
-      this.api = new WebDAVApi(this.client, this.filePath)
-      this.ready = await this.api.isPathExist('')
+      if (typeof webDAV.customServer === 'string') {
+        baseServer = webDAV.customServer
+      }
 
-      return true
+      try {
+        this.client = createClient(
+          `${baseServer}/${webDAV.dir}`,
+          {
+            username: webDAV.username,
+            password: webDAV.password,
+          },
+        )
+
+        this.api = new WebDAVApi(this.client, this.filePath)
+        this.ready = await this.api.isPathExist('')
+
+        return true
+      } catch (e) {
+        this.client = undefined
+        this.api = undefined
+        this.ready = false
+
+        console.error(e)
+      }
+
+      return false
     },
   },
 })

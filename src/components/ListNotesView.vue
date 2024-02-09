@@ -64,7 +64,8 @@
           self="center middle"
           anchor="center middle"
           color="white"
-          @show="computePopupEditStyle"
+          @show="onPopupShow"
+          @hide="onPopupHide"
         >
           <q-card
             flat
@@ -84,7 +85,7 @@
               class="col-12"
             >
               <q-editor
-                :model-value="scopePopupEdit.value"
+                v-model="scopePopupEdit.value"
                 autofocus
                 placeholder="Content"
                 height="80vh"
@@ -209,18 +210,30 @@ const $q = useQuasar()
 useKeyboardListener({
   'Control-r': {
     callback: (e: KeyboardEvent) => {
+      if (popup.value) {
+        return
+      }
+
       e.preventDefault()
       void getFileContent()
     },
   },
   'Control-a': {
     callback: (e: KeyboardEvent) => {
+      if (popup.value) {
+        return
+      }
+
       e.preventDefault()
       newNoteDialog()
     },
   },
   'Control-s': {
     callback: (e: KeyboardEvent) => {
+      if (popup.value) {
+        return
+      }
+
       e.preventDefault()
       onSave()
     },
@@ -242,6 +255,7 @@ const editor = reactive({
   ],
 })
 
+const popup = ref<boolean>(false)
 const notes = ref<Item[]>([])
 const baseNotes = ref<Item[]>([])
 const file = ref<{ items: Item[] }>({
@@ -421,6 +435,15 @@ watch(
     deep: true,
   },
 )
+
+function onPopupShow () {
+  popup.value = true
+  computePopupEditStyle()
+}
+
+function onPopupHide () {
+  popup.value = false
+}
 
 function onSave () {
   if (!hasDiff.value) {

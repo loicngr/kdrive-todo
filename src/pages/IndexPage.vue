@@ -43,7 +43,9 @@
 <script lang="ts" setup>
 import { useMainStore } from 'stores/main'
 import { storeToRefs } from 'pinia'
-import { Loading } from 'quasar'
+import {
+  Loading, Notify,
+} from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTER_SETTINGS_NAME } from 'src/constants'
 import ListNotesView from 'components/ListNotesView.vue'
@@ -107,10 +109,27 @@ async function dialogRedirectErrorFolder () {
   }
 }
 
+async function dialogRedirectErrorSettings () {
+  Notify.create({
+    message: `Server error, please check your settings`,
+    type: 'negative',
+    timeout: 7000,
+  })
+
+  void router.push({
+    name: ROUTER_SETTINGS_NAME,
+  })
+}
+
 async function reload () {
   Loading.show()
   await mainStore.connect()
   Loading.hide()
+
+  if (typeof api?.value?.client === 'undefined') {
+    void dialogRedirectErrorSettings()
+    return
+  }
 
   if (!ready.value) {
     void dialogRedirectErrorFolder()

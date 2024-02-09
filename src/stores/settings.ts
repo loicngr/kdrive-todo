@@ -7,11 +7,13 @@ export const DEFAULT_WEBDAV_STATE: {
   username?: string
   password?: string
   id?: string
+  customServer?: string
 } = {
   id: undefined,
   dir: DEFAULT_FOLDER,
   username: undefined,
   password: undefined,
+  customServer: undefined,
 }
 
 export interface State {
