@@ -11,12 +11,14 @@ interface State {
   client?: WebDAVClient
   filePath: string
   api?: WebDAVApi
+  firstLaunch: boolean
 }
 
 export const useMainStore = defineStore({
   id: 'main',
 
   state: (): State => ({
+    firstLaunch: true,
     ready: false,
     client: undefined,
     filePath: '/notes.json',
@@ -81,5 +83,14 @@ export const useMainStore = defineStore({
 
       return false
     },
+  },
+
+  persist: {
+    enabled: true,
+    strategies: [
+      {
+        paths: ['firstLaunch'],
+      },
+    ],
   },
 })

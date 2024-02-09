@@ -3,6 +3,7 @@ import { nextTick } from 'vue'
 import { useSettingsStore } from 'stores/settings'
 import { localStorageResolve } from 'src/utils/storage'
 import { type StateStorage } from 'src/interfaces/state'
+import { useMainStore } from 'stores/main'
 
 export const useStorageStore = defineStore({
   id: 'storage',
@@ -18,6 +19,7 @@ export const useStorageStore = defineStore({
   actions: {
     initStorePromises () {
       const stores = [
+        useMainStore(),
         useSettingsStore(),
       ]
 

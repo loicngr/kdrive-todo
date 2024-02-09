@@ -208,19 +208,20 @@ function testGooglePlayConsole () {
     title: `WebDAV server`,
     message: `Custom WebDAV server for google test`,
     prompt: {
-      model: cloneDeep(webdav.value.customServer ?? ''),
+      model: cloneDeep(webDAV.value.customServer ?? ''),
       type: 'text',
       required: true,
     },
     cancel: true,
     persistent: true,
   }).onOk((data) => {
-    if (typeof data === 'string' && data.startsWith('https://')) {
-      webdav.value.customServer = data.trim()
-      return
-    }
+    const v: string = (data ?? '').trim()
 
-    webDAV.value.customServer = undefined
+    if (v.startsWith('https://')) {
+      webDAV.value.customServer = v
+    } else {
+      webDAV.value.customServer = undefined
+    }
   })
 }
 

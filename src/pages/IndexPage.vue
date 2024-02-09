@@ -61,6 +61,7 @@ const localReady = ref(false)
 const {
   ready,
   filePath,
+  firstLaunch,
   api,
 } = storeToRefs(mainStore)
 
@@ -110,12 +111,20 @@ async function dialogRedirectErrorFolder () {
 }
 
 async function dialogRedirectErrorSettings () {
-  Notify.create({
-    message: `Server error, please check your settings`,
-    type: 'negative',
-    timeout: 7000,
-  })
+  if (!firstLaunch.value) {
+    Notify.create({
+      message: `Server error, please check your settings`,
+      type: 'negative',
+      timeout: 7000,
+    })
+  } else {
+    Notify.create({
+      message: `Welcome, please complete the requested fields`,
+      timeout: 6000,
+    })
+  }
 
+  firstLaunch.value = false
   void router.push({
     name: ROUTER_SETTINGS_NAME,
   })

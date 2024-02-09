@@ -1,8 +1,8 @@
 {
   "name": "kdrive-notes",
-  "version": "0.0.8",
+  "version": "1.0.0",
   "description": "A kDrive notes app",
-  "productName": "kDrive notes app",
+  "productName": "kDrive notes",
   "author": "loicngr <loicnogier@ik.me>",
   "scripts": {
     "lint": "eslint --ext .js,.ts,.vue ./",

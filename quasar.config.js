@@ -12,8 +12,25 @@ const {
   configure,
 } = require('quasar/wrappers')
 const path = require('path')
+const cp = require('child_process')
 
-module.exports = configure(function (/* ctx */) {
+const gitExec = (cmd, fallback) =>
+  process.env.NODE_ENV === 'test'
+    ? fallback
+    : (
+      () => {
+        try {
+          return cp.execSync(`git ${cmd}`, { cwd: '.' })
+            .toString().replace(/(\r\n|\n|\r)/gm, '')
+        } catch (e) {
+          return fallback
+        }
+      }
+    )()
+
+module.exports = configure(function (ctx) {
+  const GIT_TAG = gitExec('describe --abbrev=0 --tags', '0.0.1')
+
   return {
     eslint: {
       // fix: true,
@@ -212,6 +229,8 @@ module.exports = configure(function (/* ctx */) {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-capacitor-apps/configuring-capacitor
     capacitor: {
       hideSplashscreen: true,
+      version: GIT_TAG,
+      capacitorCliPreparationParams: [ 'sync', ctx.targetName ],
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-electron-apps/configuring-electron
