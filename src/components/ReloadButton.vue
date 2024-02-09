@@ -4,12 +4,15 @@
     icon="fa fa-refresh"
     color="primary"
     v-bind="$attrs"
+    :style="$q.screen.lt.sm ?
+      'padding: 0 !important; min-height: 35px !important; min-width: 35px !important;' :
+      ''"
   >
     <template #default>
       <slot name="tooltip" />
 
       <q-badge
-        v-if="!$q.platform.is.nativeMobile"
+        v-if="!$q.screen.lt.sm"
         label="Ctrl + r"
         color="white"
         text-color="primary"

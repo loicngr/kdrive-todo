@@ -7,7 +7,7 @@
         flat
       >
         <q-card-section class="text-h4">
-          Settings
+          Setting<span @click="testGooglePlayConsole">s</span>
         </q-card-section>
 
         <q-separator
@@ -62,15 +62,20 @@
             <hidden-input
               v-model.trim="webDAV.username"
               label="kDrive email *"
-              :rules="[$rules.required, $rules.string, $rules.validEmail]"
+              :rules="[
+                $rules.required,
+                $rules.string
+              ]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
               filled
+              :hide="false"
+              default-type="text"
               maxlength="255"
               label-color="white"
               color="white"
-              type="email"
+              type="text"
             />
 
             <hidden-input
@@ -138,8 +143,8 @@
 
 <script setup lang="ts">
 import {
-  DEFAULT_WEBDAV_STATE,
-  useSettingsStore
+  type DEFAULT_WEBDAV_STATE,
+  useSettingsStore,
 } from 'stores/settings'
 import {
   onBeforeMount,
@@ -147,7 +152,7 @@ import {
 } from 'vue'
 import {
   Notify,
-  QForm
+  QForm, useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import cloneDeep from 'lodash/fp/cloneDeep'
@@ -156,6 +161,7 @@ import SaveButton from 'components/SaveButton.vue'
 import HiddenInput from 'components/HiddenInput.vue'
 
 const settingsStore = useSettingsStore()
+const $q = useQuasar()
 
 const {
   webdav,
@@ -168,13 +174,13 @@ useKeyboardListener({
   'Control-s': {
     callback: (e: KeyboardEvent) => {
       e.preventDefault()
-      onSubmit()
-    }
-  }
+      void onSubmit()
+    },
+  },
 })
 
 async function onSubmit () {
-  const isValid = await formRef.value?.validate()
+  const isValid = (await formRef.value?.validate()) ?? true
 
   if (!isValid) {
     Notify.create({
@@ -194,6 +200,27 @@ async function onSubmit () {
     color: 'primary',
     textColor: 'white',
     timeout: 2000,
+  })
+}
+
+function testGooglePlayConsole () {
+  $q.dialog({
+    title: `WebDAV server`,
+    message: `Custom WebDAV server for google test`,
+    prompt: {
+      model: cloneDeep(webdav.value.customServer ?? ''),
+      type: 'text',
+      required: true,
+    },
+    cancel: true,
+    persistent: true,
+  }).onOk((data) => {
+    if (typeof data === 'string' && data.startsWith('https://')) {
+      webdav.value.customServer = data.trim()
+      return
+    }
+
+    webDAV.value.customServer = undefined
   })
 }
 

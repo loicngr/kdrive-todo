@@ -1,66 +1,177 @@
-import type {
-  GetFileContentsOptions,
-  WebDAVClient
+import {
+  createClient,
+  type GetFileContentsOptions,
+  type WebDAVClient,
 } from 'webdav'
-import { CustomFileStat } from 'src/interfaces/file'
+import { useMainStore } from 'stores/main'
+import { dialogConfirm } from 'src/utils/index'
+import {
+  Loading, Notify,
+} from 'quasar'
+import { DEFAULT_FILE } from 'src/constants'
+import { useSettingsStore } from 'stores/settings'
 
 export class WebDAVApi {
-  constructor(
+  constructor (
     public client: WebDAVClient,
-    public workingDir: string
+    public workingDir: string,
   ) {
   }
 
-  async isPathExist(path: string, addWorkingDir = false) {
-    return await this.client.exists(addWorkingDir ? this.getFilePath(path) : path)
+  async createNotesFile (
+    dialogMessage = `Create default template ?`,
+    done?: CallableFunction,
+  ) {
+    void dialogConfirm(dialogMessage, {
+      html: true,
+    })
+      .then(async () => {
+        const status = await this._createNotesFile()
+
+        if (status) {
+          if (typeof done === 'function') {
+            await done()
+          }
+
+          return true
+        }
+      })
+
+    return false
   }
 
-  async getDirectoryContents(dir?: string) {
-    return await this.client.getDirectoryContents(dir ?? this.workingDir, {
-      deep: false,
-    }) as CustomFileStat[]
-  }
-
-  async writeInFile(file: string, content: string): Promise<boolean> {
-    const filePath = this.getFilePath(file)
-
-    // let lock: LockResponse | undefined
-
-    // TODO: check why error 500 ?
-    // if (await this.client.exists(filePath)) {
-    //   lock = await this.client.lock(filePath)
-    // }
+  async _createNotesFile () {
+    Loading.show()
 
     try {
-      return await this.client.putFileContents(filePath, content)
+      await this.writeInFile(JSON.stringify(DEFAULT_FILE))
+      return true
     } catch (e) {
+      console.error(e)
+    }
+
+    Loading.hide()
+    return false
+  }
+
+  async createNotesFolder (
+    dialogMessage = `Create folder ?`,
+  ): Promise<boolean> {
+    const settingsStore = useSettingsStore()
+    const webDAV = settingsStore.webdav
+
+    if (
+      typeof webDAV.id === 'undefined' ||
+      typeof webDAV.username === 'undefined' ||
+      typeof webDAV.password === 'undefined'
+    ) {
+      Notify.create({
+        message: 'kDrive id, username or password not set in settings',
+        type: 'negative',
+        timeout: 4000,
+      })
+
       return false
     }
 
-    // if (typeof lock !== 'undefined') {
-    //   await this.client.unlock(filePath, lock.token)
-    // }
+    const saveCurrentClient = this.client
+    let status = false
+
+    return await new Promise((resolve) => {
+      void dialogConfirm(dialogMessage, {
+        html: true,
+      })
+        .then(async () => {
+          Loading.show()
+
+          try {
+            let baseServer = `https://${webDAV.id}.connect.kdrive.infomaniak.com`
+
+            if (typeof webDAV.customServer === 'string') {
+              baseServer = webDAV.customServer
+            }
+
+            this.client = createClient(
+              baseServer,
+              {
+                username: webDAV.username,
+                password: webDAV.password,
+              },
+            )
+
+            await this.createDir()
+
+            status = true
+          } catch (e) {
+            console.error(e)
+            status = false
+          }
+        })
+        .finally(() => {
+          this.client = saveCurrentClient
+          Loading.hide()
+          resolve(status)
+        })
+    })
   }
 
-  async deleteFile(file: string) {
-    return await this.client.deleteFile(this.getFilePath(file))
+  async isPathExist (path?: string) {
+    const mainStore = useMainStore()
+    path ??= mainStore.filePath
+
+    return await this.client.exists(path)
   }
 
-  async getFileContents(
-    file?: string,
-    format: GetFileContentsOptions['format'] = 'text'
-  ) {
-    if (typeof file === 'undefined') {
-      console.error('File is undefined')
+  async writeInFile (content: string): Promise<boolean> {
+    const mainStore = useMainStore()
+
+    try {
+      return await this.client.putFileContents(mainStore.filePath, content)
+    } catch (e) {
+      return false
+    }
+  }
+
+  async createDir (): Promise<void> {
+    const settingsStore = useSettingsStore()
+    const dir = settingsStore.webdav.dir
+
+    if (typeof dir !== 'string') {
+      Notify.create({
+        message: 'Directory not set in settings',
+        type: 'negative',
+        timeout: 4000,
+      })
       return
     }
 
-    return await this.client.getFileContents(this.getFilePath(file), {
+    try {
+      const status = await this.isPathExist(dir)
+
+      if (status) {
+        return
+      }
+
+      await this.client.createDirectory(dir)
+    } catch (e) {
+      Notify.create({
+        message: (e ?? 'Directory not created') as string,
+        type: 'negative',
+      })
+    }
+  }
+
+  async getFileContent (
+    format: GetFileContentsOptions['format'] = 'text',
+  ) {
+    const mainStore = useMainStore()
+
+    return await this.client.getFileContents(mainStore.filePath, {
       format,
     })
   }
 
-  getFilePath(file: string) {
+  getFilePath (file: string) {
     return `${this.workingDir}${file}`
   }
 }

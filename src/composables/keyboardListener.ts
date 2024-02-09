@@ -1,14 +1,12 @@
 import { HandleKeyboardListener } from 'src/utils'
 import {
   onBeforeUnmount,
-  onMounted
+  onMounted,
 } from 'vue'
 
-export function useKeyboardListener(context: {
-  [key: string]: {
-    callback: (e: KeyboardEvent) => void
-  }
-}) {
+export function useKeyboardListener (context: Record<string, {
+  callback: (e: KeyboardEvent) => void
+}>) {
   const listenerKeyboard = new HandleKeyboardListener(context)
 
   onMounted(() => {

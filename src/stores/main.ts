@@ -1,19 +1,15 @@
 import { defineStore } from 'pinia'
 import {
   createClient,
-  WebDAVClient
+  type WebDAVClient,
 } from 'webdav'
 import { WebDAVApi } from 'src/utils/webdav'
-import { FileData } from 'src/interfaces/file'
 import { useSettingsStore } from 'stores/settings'
 
 interface State {
   ready: boolean
   client?: WebDAVClient
-  workingDir: string
-  _workingFile?: string
-  workingTodoFileContent: FileData[]
-  workingFileContent: string
+  filePath: string
   api?: WebDAVApi
 }
 
@@ -23,11 +19,8 @@ export const useMainStore = defineStore({
   state: (): State => ({
     ready: false,
     client: undefined,
-    workingDir: '/',
-    workingTodoFileContent: [],
-    workingFileContent: '',
-    _workingFile: undefined,
-    api: undefined
+    filePath: '/notes.json',
+    api: undefined,
   }),
 
   getters: {
@@ -40,26 +33,13 @@ export const useMainStore = defineStore({
 
       return api
     },
-
-    workingFile (): string | undefined {
-      return this._workingFile
-    }
   },
 
   actions: {
-    closeFile () {
-      this.workingTodoFileContent = []
-      this._workingFile = undefined
-    },
-
-    setWorkingFile (file?: string) {
-      this._workingFile = file
-    },
-
-    async connect() {
-      if (typeof this.client !== 'undefined') {
-        return
-      }
+    async connect () {
+      this.client = undefined
+      this.api = undefined
+      this.ready = false
 
       const settingsStore = useSettingsStore()
       const webDAV = settingsStore.webdav
@@ -69,18 +49,37 @@ export const useMainStore = defineStore({
         typeof webDAV.username === 'undefined' ||
         typeof webDAV.password === 'undefined'
       ) {
-        return
+        return false
       }
 
-      this.client = createClient(
-        `https://${webDAV.id}.connect.kdrive.infomaniak.com/${webDAV.dir}`,
-        {
-          username: webDAV.username,
-          password: webDAV.password
-        }
-      )
+      let baseServer = `https://${webDAV.id}.connect.kdrive.infomaniak.com`
 
-      this.api = new WebDAVApi(this.client, this.workingDir)
-    }
+      if (typeof webDAV.customServer === 'string') {
+        baseServer = webDAV.customServer
+      }
+
+      try {
+        this.client = createClient(
+          `${baseServer}/${webDAV.dir}`,
+          {
+            username: webDAV.username,
+            password: webDAV.password,
+          },
+        )
+
+        this.api = new WebDAVApi(this.client, this.filePath)
+        this.ready = await this.api.isPathExist('')
+
+        return true
+      } catch (e) {
+        this.client = undefined
+        this.api = undefined
+        this.ready = false
+
+        console.error(e)
+      }
+
+      return false
+    },
   },
 })

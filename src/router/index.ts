@@ -4,16 +4,10 @@ import {
   createRouter,
   createWebHashHistory,
   createWebHistory,
-  NavigationGuardNext,
-  RouteLocationNormalized
+  type NavigationGuardNext,
+  type RouteLocationNormalized,
 } from 'vue-router'
 import routes from './routes'
-import {
-  ROUTER_INDEX_NAME,
-  ROUTER_TEXT_NAME,
-  ROUTER_TODO_NAME
-} from 'src/constants'
-import { useMainStore } from 'stores/main'
 import { localStorageReady } from 'src/utils/storage'
 
 async function routerBefore (
@@ -23,32 +17,22 @@ async function routerBefore (
 ) {
   await localStorageReady
 
-  if (
-    to.name === ROUTER_TODO_NAME ||
-    to.name === ROUTER_TEXT_NAME
-  ) {
-    const mainStore = useMainStore()
-    if (typeof mainStore.workingFile === 'undefined') {
-      next({
-        name: ROUTER_INDEX_NAME
-      })
-
-      return
-    }
-  }
-
   next()
 }
 
-export default route(function(/* { store, ssrContext } */) {
-  const createHistory = process.env.SERVER
-    ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
+export default route(function (/* { store, ssrContext } */) {
+  let createHistory = createMemoryHistory
+
+  if (process.env.SERVER !== null) {
+    createHistory = process.env.VUE_ROUTER_MODE === 'history'
+      ? createWebHistory
+      : createWebHashHistory
+  }
 
   const router = createRouter({
     scrollBehavior: () => ({
       left: 0,
-      top: 0
+      top: 0,
     }),
 
     routes,
@@ -56,7 +40,7 @@ export default route(function(/* { store, ssrContext } */) {
     // Leave this as is and make changes in quasar.conf.js instead!
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
-    history: createHistory(process.env.VUE_ROUTER_BASE)
+    history: createHistory(process.env.VUE_ROUTER_BASE),
   })
 
   router.beforeEach(routerBefore)

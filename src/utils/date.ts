@@ -19,7 +19,9 @@ export function parseIso (d: string) {
     : parseInt(i))
 
   const newDate = new Date(year, month - 1, date, hours, minutes, seconds, ms)
-  return newDate.toString() !== 'Invalid Date' ? newDate : d
+  return newDate.toString() !== 'Invalid Date'
+    ? newDate
+    : d
 }
 
 export function dateFormat (d: string) {
