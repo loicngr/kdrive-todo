@@ -64,20 +64,18 @@
               label="kDrive email *"
               :rules="[
                 $rules.required,
-                typeof webDAV.customServer !== 'undefined'
-                  ? $rules.string
-                  : $rules.validEmail
+                $rules.string
               ]"
               lazy-rules
               class="col-12 col-md-6 error-white"
               input-class="text-white"
               filled
               :hide="false"
-              default-type="email"
+              default-type="text"
               maxlength="255"
               label-color="white"
               color="white"
-              type="email"
+              type="text"
             />
 
             <hidden-input
