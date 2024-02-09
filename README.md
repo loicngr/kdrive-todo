@@ -3,7 +3,7 @@
 - The application connects to your [Infomaniak kDrive](https://kdrive.infomaniak.com) via webDAV.
 
 ## How to
-- [How to install PWA on PC and Phone](doc/PWA.md)
+- [How to install PWA (PC and Phone)](doc/PWA.md)
 ## Android version coming soon (wait google validation)
 
 ## Setup infos
