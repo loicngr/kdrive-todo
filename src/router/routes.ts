@@ -19,11 +19,6 @@ const routes: RouteRecordRaw[] = [
         name: ROUTER_SETTINGS_NAME,
         component: async () => await import('pages/SettingsPage.vue'),
       },
-      {
-        path: 'dev',
-        name: 'dev',
-        component: async () => await import('pages/DevPage.vue'),
-      },
     ],
   },
 

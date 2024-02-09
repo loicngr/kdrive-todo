@@ -28,21 +28,6 @@
           </q-tooltip>
         </q-btn>
       </q-page-sticky>
-
-      <q-page-sticky
-        position="bottom-left"
-        :offset="[18, 18]"
-      >
-        <q-btn
-          fab
-          icon="fa fa-home"
-          color="primary"
-          :style="$q.screen.lt.sm ?
-            'padding: 0 !important; min-height: 35px !important; min-width: 35px !important;' :
-            ''"
-          @click="goToDev()"
-        />
-      </q-page-sticky>
     </q-page-container>
   </q-layout>
 </template>
@@ -96,12 +81,6 @@ function goToHome () {
 
   void router.replace({
     name: ROUTER_INDEX_NAME,
-  })
-}
-
-function goToDev () {
-  void router.replace({
-    name: 'dev',
   })
 }
 
