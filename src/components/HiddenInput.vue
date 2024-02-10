@@ -65,8 +65,8 @@ const mergedAttrs = computed(() => ({
 
 const inputIcon = computed(() => {
   return `fa fa-${hide.value
-  ? 'eye-slash'
-  : 'eye'}`
+    ? 'eye-slash'
+    : 'eye'}`
 })
 
 function toggleHide () {

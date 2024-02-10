@@ -3,6 +3,7 @@ import {
   shallowRef,
   triggerRef,
 } from 'vue'
+import { t } from 'boot/i18n'
 
 export function downloadBlob (blob: Blob, name: string) {
   const link = document.createElement('a')
@@ -14,7 +15,7 @@ export function downloadBlob (blob: Blob, name: string) {
 export async function dialogConfirm (message: string, opt = {}) {
   return await new Promise((resolve, reject) => {
     Dialog.create({
-      title: 'Confirm',
+      title: t('confirm'),
       message,
       cancel: true,
       persistent: true,

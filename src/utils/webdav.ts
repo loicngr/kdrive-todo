@@ -6,12 +6,15 @@ import {
 import { useMainStore } from 'stores/main'
 import { dialogConfirm } from 'src/utils/index'
 import {
-  Loading, Notify,
+  Loading,
+  Notify,
 } from 'quasar'
 import { DEFAULT_FILE } from 'src/constants'
 import { useSettingsStore } from 'stores/settings'
+import { t } from 'boot/i18n'
 
 export class WebDAVApi {
+  // eslint-disable-next-line no-useless-constructor
   constructor (
     public client: WebDAVClient,
     public workingDir: string,
@@ -19,7 +22,7 @@ export class WebDAVApi {
   }
 
   async createNotesFile (
-    dialogMessage = `Create default template ?`,
+    dialogMessage = t('createdTemplate'),
     done?: CallableFunction,
   ) {
     void dialogConfirm(dialogMessage, {
@@ -55,7 +58,7 @@ export class WebDAVApi {
   }
 
   async createNotesFolder (
-    dialogMessage = `Create folder ?`,
+    dialogMessage = t('createdFolder'),
   ): Promise<boolean> {
     const settingsStore = useSettingsStore()
     const webDAV = settingsStore.webdav
@@ -66,7 +69,7 @@ export class WebDAVApi {
       typeof webDAV.password === 'undefined'
     ) {
       Notify.create({
-        message: 'kDrive id, username or password not set in settings',
+        message: t('settingsUndefined'),
         type: 'negative',
         timeout: 4000,
       })
@@ -138,7 +141,7 @@ export class WebDAVApi {
 
     if (typeof dir !== 'string') {
       Notify.create({
-        message: 'Directory not set in settings',
+        message: t('dirNotSet'),
         type: 'negative',
         timeout: 4000,
       })
@@ -155,7 +158,7 @@ export class WebDAVApi {
       await this.client.createDirectory(dir)
     } catch (e) {
       Notify.create({
-        message: (e ?? 'Directory not created') as string,
+        message: (e ?? t('dirNotCreated')) as string,
         type: 'negative',
       })
     }

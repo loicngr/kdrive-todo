@@ -5,13 +5,7 @@ import { type NotesFile } from 'src/interfaces/file'
 
 export const DEFAULT_FOLDER = 'WebDAVJS'
 
-export const ROUTER_INDEX_NAME = 'index'
-
-export const ROUTER_NOTES_NAME = 'notes'
-
-export const ROUTER_TODO_NAME = 'todo'
-
-export const ROUTER_TEXT_NAME = 'text'
+export const ROUTER_INDEX_NAME = 'home'
 
 export const ROUTER_SETTINGS_NAME = 'settings'
 

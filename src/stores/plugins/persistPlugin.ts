@@ -32,6 +32,7 @@ declare module 'pinia' {
   }
 }
 
+// eslint-disable-next-line no-undef
 let localForageInstance: LocalForage
 const localForageOptions = {
   name: STORAGE_KEY,

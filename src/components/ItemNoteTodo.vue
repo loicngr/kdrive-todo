@@ -10,7 +10,7 @@
             ref="newTaskRef"
             v-model.trim="newValue.content"
             type="text"
-            label="New task"
+            :label="$t('newTask')"
             maxlength="255"
           />
         </q-item-section>
@@ -37,19 +37,23 @@
       >
         <q-item-section
           side
-          style="padding: 0 !important; margin: 0 !important;"
+          style="padding: 0 !important;"
         >
           <q-icon
             left
-            style="cursor: move"
+            style="margin: 0 !important; cursor: move;"
             class="handle"
             name="fa fa-grip-vertical"
           />
         </q-item-section>
 
-        <q-item-section side>
+        <q-item-section
+          side
+          style="padding-right: 5px !important;"
+        >
           <q-checkbox
             v-model="todo.done"
+            :dense="$q.screen.lt.sm"
           />
         </q-item-section>
 
@@ -65,7 +69,10 @@
           />
         </q-item-section>
 
-        <q-item-section side>
+        <q-item-section
+          side
+          style="padding: 0 !important;"
+        >
           <q-btn
             fab-mini
             unelevated

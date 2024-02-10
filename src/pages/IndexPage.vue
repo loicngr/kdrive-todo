@@ -44,17 +44,22 @@
 import { useMainStore } from 'stores/main'
 import { storeToRefs } from 'pinia'
 import {
-  Loading, Notify,
+  Loading,
+  Notify,
 } from 'quasar'
 import { useRouter } from 'vue-router'
 import { ROUTER_SETTINGS_NAME } from 'src/constants'
 import ListNotesView from 'components/ListNotesView.vue'
 import { useSettingsStore } from 'stores/settings'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
 const mainStore = useMainStore()
 const settingsStore = useSettingsStore()
+const {
+  t,
+} = useI18n()
 
 const localReady = ref(false)
 
@@ -71,11 +76,7 @@ const {
 
 async function dialogRedirectError () {
   const status = await api?.value?.createNotesFile(
-    `
-    The file "notes.json" doesn't exist in your kDrive.<br>
-    All your notes will be saved in this file.<br>
-    Would you like to create it?
-    `,
+    t('dialogRedirectError'),
     reload,
   ) ?? false
 
@@ -88,11 +89,9 @@ async function dialogRedirectError () {
 
 async function dialogRedirectErrorFolder () {
   let status = (await api?.value?.createNotesFolder(
-    `
-    The folder "${webdav.value.dir}" doesn't exist in your kDrive.<br>
-    All your notes will be saved in this folder.<br>
-    Would you like to create it?
-    `,
+    t('dialogRedirectErrorFolder', {
+      dir: webdav.value.dir,
+    }),
   )) ?? false
 
   if (!status) {
@@ -113,13 +112,13 @@ async function dialogRedirectErrorFolder () {
 async function dialogRedirectErrorSettings () {
   if (!firstLaunch.value) {
     Notify.create({
-      message: `Server error, please check your settings`,
+      message: t('dialogRedirectErrorSettings'),
       type: 'negative',
       timeout: 7000,
     })
   } else {
     Notify.create({
-      message: `Welcome, please complete the requested fields`,
+      message: t('dialogRedirectErrorSettingsFirstTime'),
       timeout: 6000,
     })
   }
