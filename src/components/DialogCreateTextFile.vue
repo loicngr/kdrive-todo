@@ -15,14 +15,14 @@
       >
         <q-card-section class="col-auto">
           <div class="text-h6">
-            Create a new text file
+            {{ $t('createTextFile') }}
           </div>
         </q-card-section>
 
         <q-card-section class="q-col-gutter-sm row items-center justify-between">
           <q-input
             v-model.trim="filename"
-            label="Filename *"
+            :label="$t('filename').concat(' *')"
             suffix=".txt"
             autofocus
             :rules="[$rules.required, $rules.validFileNameOrFolder]"
@@ -38,7 +38,7 @@
         >
           <q-btn
             v-close-popup
-            label="Close"
+            :label="$t('close')"
             color="negative"
             data-cy="lwf-dialog-footer-btn-cancel"
             @click="onDialogCancel"
@@ -46,7 +46,7 @@
 
           <q-btn
             type="submit"
-            label="Create"
+            :label="$t('create')"
             color="primary"
           />
         </q-card-actions>

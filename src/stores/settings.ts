@@ -18,6 +18,7 @@ export const DEFAULT_WEBDAV_STATE: {
 
 export interface State {
   webdav: typeof DEFAULT_WEBDAV_STATE
+  language: string,
 }
 
 export const useSettingsStore = defineStore({
@@ -25,6 +26,7 @@ export const useSettingsStore = defineStore({
 
   state: (): State => ({
     webdav: cloneDeep(DEFAULT_WEBDAV_STATE),
+    language: 'en-US',
   }),
 
   getters: {
@@ -48,7 +50,10 @@ export const useSettingsStore = defineStore({
     enabled: true,
     strategies: [
       {
-        paths: ['webdav'],
+        paths: [
+          'webdav',
+          'language',
+        ],
       },
     ],
   },

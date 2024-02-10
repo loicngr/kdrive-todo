@@ -7,11 +7,9 @@ module.exports = {
   // https://eslint.vuejs.org/user-guide/#how-to-use-a-custom-parser
   // Must use parserOptions instead of "parser" to allow vue-eslint-parser to keep working
   // `parser: 'vue-eslint-parser'` is already included with any 'plugin:vue/**' config and should be omitted
-  parser: 'vue-eslint-parser',
   parserOptions: {
     parser: require.resolve('@typescript-eslint/parser'),
     extraFileExtensions: [ '.vue' ],
-    project: './tsconfig.json',
   },
 
   env: {
@@ -37,7 +35,7 @@ module.exports = {
       'plugin:vue/vue3-strongly-recommended', // Priority B: Strongly Recommended (Improving Readability)
       'plugin:vue/vue3-recommended', // Priority C: Recommended (Minimizing Arbitrary Choices and Cognitive Overhead)
 
-      'standard-with-typescript',
+      'standard',
   ],
 
   plugins: [
@@ -163,6 +161,10 @@ module.exports = {
       'vue/no-useless-concat': 'error',
       'vue/prefer-template': 'error',
       'vue/multi-word-component-names': 'off',
+
+      "indent": ["error", 2, {
+          "ImportDeclaration": 1
+      }],
 
       'no-unused-expressions': 0,
       '@typescript-eslint/no-unused-expressions': 0,

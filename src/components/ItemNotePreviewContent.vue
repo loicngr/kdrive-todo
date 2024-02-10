@@ -1,7 +1,11 @@
 <template>
   <template v-if="typeof vValue === 'string'">
-    <div v-bind="$attrs">
-      {{ vValue }}
+    <div
+      v-bind="$attrs"
+    >
+      <!-- eslint-disable vue/no-v-html -->
+      <span v-html="vValue" />
+      <!-- eslint-enable vue/no-v-html -->
     </div>
   </template>
   <template v-else>

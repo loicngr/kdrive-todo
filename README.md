@@ -1,10 +1,11 @@
 # kDrive Notes & To-do lists
 - Manage your notes and to-do lists in a simplified interface.
 - The application connects to your [Infomaniak kDrive](https://kdrive.infomaniak.com) via webDAV.
+- If you want a more sophisticated solution, take a look at [Joplin](https://github.com/laurent22/joplin). A guide is available [here](https://www.infomaniak.com/fr/support/faq/1800/synchroniser-les-notes-joplin-par-webdav-avec-kdrive)
 
 ## How to
 - [How to install PWA (PC and Phone)](doc/PWA.md)
-## Android version coming soon (wait google validation)
+## Android version [here (alpha)](https://play.google.com/store/apps/details?id=fr.zkf.kdrive_notes)
 
 ## Setup infos
 - The default folder is `WebDAVJS`, please create it at the root of your kDrive.

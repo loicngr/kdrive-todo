@@ -24,7 +24,7 @@
             self="bottom right"
             anchor="top right"
           >
-            Go to {{ goToPageName }} page
+            {{ t('gotToPage', { name: goToPageName }) }}
           </q-tooltip>
         </q-btn>
       </q-page-sticky>
@@ -40,22 +40,26 @@ import {
 import {
   ROUTER_INDEX_NAME,
   ROUTER_SETTINGS_NAME,
-  ROUTER_TEXT_NAME,
-  ROUTER_TODO_NAME,
 } from 'src/constants'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const route = useRoute()
 const router = useRouter()
+const {
+  t,
+} = useI18n()
 
 const canShow = computed(() => {
-  return route.name === ROUTER_SETTINGS_NAME || route.name === ROUTER_INDEX_NAME || route.name === ROUTER_TODO_NAME || route.name === ROUTER_TEXT_NAME
+  return route.name === ROUTER_SETTINGS_NAME || route.name === ROUTER_INDEX_NAME
 })
 
 const goToPageName = computed(() => {
-  return route.name !== ROUTER_INDEX_NAME
+  const i18nKey = route.name !== ROUTER_INDEX_NAME
     ? ROUTER_INDEX_NAME
     : ROUTER_SETTINGS_NAME
+
+  return t(i18nKey)
 })
 
 const goToPageIcon = computed(() => {

@@ -1,14 +1,12 @@
 <template>
-  <div
-    class="q-pa-md col-12 q-gutter-md"
-    :class="{
-      'row items-start': !$q.screen.lt.sm,
-    }"
-  >
+  <div class="fit row wrap justify-start items-start col-12">
     <q-card
       v-for="(note, loopIndex) in notes"
       :key="note.id"
-      class="card-note col-auto row"
+      class="col-12 col-md-3 col-sm-4 self-start q-my-sm"
+      :class="{
+        'q-mx-sm': $q.screen.gt.xs
+      }"
       flat
       bordered
     >
@@ -25,8 +23,8 @@
           v-slot="scopePopupEdit"
           v-model="note.title"
           buttons
-          label-set="Save"
-          label-cancel="Cancel"
+          :label-set="$t('save')"
+          :label-cancel="$t('cancel')"
           anchor="center middle"
           :validate="noteTitleValidation"
           @hide="onNoteTitleHide(note.title, loopIndex)"
@@ -34,7 +32,7 @@
           <q-input
             v-model.trim="scopePopupEdit.value"
             type="text"
-            hint="Title"
+            :hint="$t('title')"
             dense
             autofocus
             :error="errorNoteTitle.status"
@@ -57,8 +55,8 @@
           v-slot="scopePopupEdit"
           v-model="note.content"
           buttons
-          label-set="Ok"
-          label-cancel="Cancel"
+          :label-set="$t('ok')"
+          :label-cancel="$t('cancel')"
           class="full-popup"
           :style="popupEditStyle"
           self="center middle"
@@ -73,7 +71,7 @@
           >
             <q-card-section
               v-if="note.type === ITEM_TYPE_TODO"
-              class="col-6"
+              class="col-12 col-md-6"
             >
               <item-note-todo
                 v-model="scopePopupEdit.value"
@@ -87,7 +85,7 @@
               <q-editor
                 v-model="scopePopupEdit.value"
                 autofocus
-                placeholder="Content"
+                :placeholder="$t('content')"
                 height="80vh"
                 max-height="1200px"
                 :toolbar="editor.toolbar"
@@ -115,8 +113,8 @@
           icon="fa fa-info"
         >
           <q-tooltip>
-            Created at: {{ dateTimeFormat(note.createdAt) }} <br>
-            Update at: {{ dateTimeFormat(note.createdAt) === dateTimeFormat(note.createdAt)
+            {{ $t('createdAt') }}: {{ dateTimeFormat(note.createdAt) }} <br>
+            {{ $t('updatedAt') }}: {{ dateTimeFormat(note.createdAt) === dateTimeFormat(note.createdAt)
               ? 'never'
               : dateTimeFormat(note.updatedAt) }}
           </q-tooltip>
@@ -150,7 +148,7 @@
           self="top left"
           anchor="top left"
         >
-          Create a new file
+          {{ $t('createNewFile') }}
         </q-tooltip>
       </template>
     </add-button>
@@ -163,7 +161,7 @@
           self="top left"
           anchor="top left"
         >
-          Reload notes
+          {{ $t('reload') }}
         </q-tooltip>
       </template>
     </reload-button>
@@ -203,9 +201,13 @@ import { useKeyboardListener } from 'src/composables/keyboardListener'
 import SaveButton from 'components/SaveButton.vue'
 import isEqual from 'lodash/fp/isEqual'
 import { dateTimeFormat } from 'src/utils/date'
+import { useI18n } from 'vue-i18n'
 
 const mainStore = useMainStore()
 const $q = useQuasar()
+const {
+  t,
+} = useI18n()
 
 useKeyboardListener({
   'Control-r': {
@@ -316,19 +318,19 @@ function onDeleteNote (note: Item) {
 
 function newNoteDialog () {
   $q.dialog({
-    title: 'Options',
-    message: 'Select new file type:',
+    title: t('options'),
+    message: t('selectNewFileType'),
     color: 'primary',
     options: {
       type: 'radio',
       model: 'todo',
       items: [
         {
-          label: 'Text',
+          label: t('text'),
           value: 'text',
         },
         {
-          label: 'Todo',
+          label: t('todo'),
           value: 'todo',
         },
       ],
@@ -408,7 +410,7 @@ async function getFileContent () {
 
     if (textFileContent.length === 0 || textFileContent.charAt(0) !== '{') {
       Notify.create({
-        message: 'File is empty, or format is invalid.',
+        message: t('fileEmptyOrInvalid'),
         type: 'negative',
       })
 
@@ -448,7 +450,7 @@ function onPopupHide () {
 function onSave () {
   if (!hasDiff.value) {
     Notify.create({
-      message: 'Nothing to save',
+      message: t('notingToSave'),
       color: 'primary',
       textColor: 'white',
       timeout: 2000,
@@ -456,7 +458,7 @@ function onSave () {
     return
   }
 
-  void dialogConfirm('Do you want save')
+  void dialogConfirm(t('confirmSave'))
     .then(async () => {
       Loading.show()
 
@@ -481,11 +483,6 @@ await main()
 </script>
 
 <style scoped lang="scss">
-.card-note {
-  width: 100%;
-  max-width: 300px;
-}
-
 .card-note-content {
   min-height: 50px;
   max-height: 250px;

@@ -6,8 +6,16 @@
         style="max-width: 900px"
         flat
       >
-        <q-card-section class="text-h4">
-          Setting<span @click="testGooglePlayConsole">s</span>
+        <q-card-section class="row justify-between">
+          <div class="text-h4">
+            {{ $t('settings').slice(0, -1) }}<span @click="testGooglePlayConsole">s</span>
+          </div>
+
+          <div>
+            <language-switcher
+              v-model="language"
+            />
+          </div>
         </q-card-section>
 
         <q-separator
@@ -22,7 +30,7 @@
           >
             <hidden-input
               v-model="webDAV.id"
-              label="kDrive ID *"
+              :label="`kDrive ${$t('id')} *`"
               :rules="[$rules.required, $rules.validKDriveID]"
               lazy-rules
               class="col-12 col-md-6 error-white"
@@ -36,7 +44,7 @@
 
             <q-input
               v-model.trim="webDAV.dir"
-              label="WebDAV folder *"
+              :label="`kDrive ${$t('folder').toLowerCase()} *`"
               :rules="[$rules.required, $rules.string, $rules.validFileNameOrFolder]"
               lazy-rules
               class="col-12 col-md-6 error-white"
@@ -61,7 +69,7 @@
 
             <hidden-input
               v-model.trim="webDAV.username"
-              label="kDrive email *"
+              :label="`kDrive ${$t('email').toLowerCase()} *`"
               :rules="[
                 $rules.required,
                 $rules.string
@@ -80,7 +88,7 @@
 
             <hidden-input
               v-model.trim="webDAV.password"
-              label="kDrive password *"
+              :label="`kDrive ${$t('password').toLowerCase()} *`"
               :rules="[$rules.required, $rules.string]"
               lazy-rules
               class="col-12 col-md-6 error-white"
@@ -119,13 +127,38 @@
         flat
         style="max-width: 900px"
       >
-        <q-card-section style="font-size: .7rem">
-          <q-icon name="fa fa-info" />
-          <a
-            class="text-white text-weight-bold q-ml-sm"
-            href="https://www.infomaniak.com/en/support/faq/2409/connect-to-kdrive-via-webdav"
-            target="_blank"
-          >Infomaniak connect to kDrive via webDAV</a>
+        <q-card-section
+          class="row justify-around"
+        >
+          <q-btn
+            icon="fa fa-info"
+            dense
+            size="sm"
+            flat
+            class="col-auto"
+            :label="$t('infomaniakConnectViaWebDAV')"
+            @click="openURL('https://www.infomaniak.com/en/support/faq/2409/connect-to-kdrive-via-webdav')"
+          />
+
+          <q-btn
+            icon="fa fa-question"
+            dense
+            size="sm"
+            flat
+            class="col-auto"
+            :label="$t('needSupport')"
+            @click="openURL('https://www.github.com/loicngr/kdrive-notes')"
+          />
+
+          <q-btn
+            icon="fa-brands fa-twitter"
+            dense
+            size="sm"
+            flat
+            class="col-auto"
+            label="X / Twitter"
+            @click="openURL('https://x.com/Zaekof')"
+          />
         </q-card-section>
       </q-card>
     </div>
@@ -147,11 +180,12 @@ import {
   useSettingsStore,
 } from 'stores/settings'
 import {
+  nextTick,
   onBeforeMount,
   ref,
 } from 'vue'
 import {
-  Notify,
+  Notify, openURL,
   QForm, useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
@@ -159,15 +193,23 @@ import cloneDeep from 'lodash/fp/cloneDeep'
 import { useKeyboardListener } from 'src/composables/keyboardListener'
 import SaveButton from 'components/SaveButton.vue'
 import HiddenInput from 'components/HiddenInput.vue'
+import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from 'components/languageSwitcher.vue'
 
 const settingsStore = useSettingsStore()
 const $q = useQuasar()
+const {
+  t,
+} = useI18n()
 
 const {
   webdav,
+  language: storeLanguage,
 } = storeToRefs(settingsStore)
 
-const webDAV = ref<typeof DEFAULT_WEBDAV_STATE>({})
+const webDAV = ref<typeof DEFAULT_WEBDAV_STATE>(cloneDeep(webdav.value))
+const language = ref<string>(cloneDeep(storeLanguage.value))
+
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
 useKeyboardListener({
@@ -184,8 +226,8 @@ async function onSubmit () {
 
   if (!isValid) {
     Notify.create({
-      message: 'Settings not saved',
-      caption: 'Please, check fields value',
+      message: t('settingsNotSave'),
+      caption: t('settingsNotSaveCaption'),
       color: 'primary',
       textColor: 'white',
       timeout: 2000,
@@ -195,11 +237,15 @@ async function onSubmit () {
   }
 
   webdav.value = cloneDeep(webDAV.value)
-  Notify.create({
-    message: 'Settings saved',
-    color: 'primary',
-    textColor: 'white',
-    timeout: 2000,
+  storeLanguage.value = cloneDeep(language.value)
+
+  void nextTick(() => {
+    Notify.create({
+      message: t('settingsSave'),
+      color: 'primary',
+      textColor: 'white',
+      timeout: 2000,
+    })
   })
 }
 
@@ -227,6 +273,7 @@ function testGooglePlayConsole () {
 
 onBeforeMount(async () => {
   webDAV.value = cloneDeep(webdav.value)
+  language.value = cloneDeep(storeLanguage.value)
 })
 </script>
 
