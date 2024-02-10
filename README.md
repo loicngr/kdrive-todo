@@ -4,7 +4,9 @@
 - If you want a more sophisticated solution, take a look at [Joplin](https://github.com/laurent22/joplin). A guide is available [here](https://www.infomaniak.com/fr/support/faq/1800/synchroniser-les-notes-joplin-par-webdav-avec-kdrive)
 
 ## Preview
-<img src="src/assets/tablet-home.jpg" alt="image" width="300" height="auto">
+<img src="src/assets/tablet-home.jpg" alt="image" width="700" height="auto">
+<img src="src/assets/tablet-settings.jpg" alt="image" width="700" height="auto">
+<img src="src/assets/phone-home.jpg" alt="image" width="400" height="auto">
 
 ## How to
 - [How to install PWA (PC and Phone)](doc/PWA.md)
