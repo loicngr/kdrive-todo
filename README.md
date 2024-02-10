@@ -3,6 +3,9 @@
 - The application connects to your [Infomaniak kDrive](https://kdrive.infomaniak.com) via webDAV.
 - If you want a more sophisticated solution, take a look at [Joplin](https://github.com/laurent22/joplin). A guide is available [here](https://www.infomaniak.com/fr/support/faq/1800/synchroniser-les-notes-joplin-par-webdav-avec-kdrive)
 
+## Preview
+<img src="src/assets/tablet-home.jpg" alt="image" width="300" height="auto">
+
 ## How to
 - [How to install PWA (PC and Phone)](doc/PWA.md)
 ## Android version [here (alpha)](https://play.google.com/store/apps/details?id=fr.zkf.kdrive_notes)
