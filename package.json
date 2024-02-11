@@ -9,10 +9,13 @@
     "format": "prettier --write \"**/*.{js,ts,vue,scss,html,md,json}\" --ignore-path .gitignore",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
+    "dev:electron": "quasar dev -m electron",
     "build": "quasar build",
     "build:pwa": "quasar build -m pwa",
+    "build:electron": "quasar build -m electron",
     "generate:icons": "icongenie g -i src/assets/logo.png -p ./icongenie/icongenie-pwa.json",
-    "generate:android:icons": "icongenie generate -m capacitor -i src/assets/logo.png"
+    "generate:android:icons": "icongenie generate -m capacitor -i src/assets/logo.png",
+    "generate:electron:icons": "icongenie generate -m electron -i src/assets/logo.png"
   },
   "dependencies": {
     "@quasar/extras": "^1.16.9",
@@ -39,6 +42,8 @@
     "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "^10.4.17",
     "dotenv": "^16.4.1",
+    "electron": "^28.2.2",
+    "electron-builder": "^24.9.1",
     "eslint": "^8.56.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-config-standard-with-typescript": "^43.0.1",

@@ -94,15 +94,15 @@ module.exports = configure(function (ctx) {
       // publicPath: '/',
       // analyze: true,
       env: {
-        ...require('dotenv').config({
-          debug: true,
-          path: '.env',
-        }).parsed,
-        ...require('dotenv').config({
-          debug: true,
-          path: '.env.local',
-          override: true,
-        }).parsed,
+        // ...require('dotenv').config({
+        //   debug: true,
+        //   path: '.env',
+        // }).parsed,
+        // ...require('dotenv').config({
+        //   debug: true,
+        //   path: '.env.local',
+        //   override: true,
+        // }).parsed,
       },
       // rawDefine: {}
       // ignorePublicFolder: true,
@@ -240,7 +240,7 @@ module.exports = configure(function (ctx) {
 
       inspectPort: 5858,
 
-      bundler: 'packager', // 'packager' or 'builder'
+      bundler: 'builder', // 'packager' or 'builder'
 
       // packager: {
       // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -257,8 +257,7 @@ module.exports = configure(function (ctx) {
 
       builder: {
         // https://www.electron.build/configuration/configuration
-
-        appId: 'kdrive',
+        appId: 'fr.zkf.kdrive_notes',
       },
     },
 
