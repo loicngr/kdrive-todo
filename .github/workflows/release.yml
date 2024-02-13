@@ -22,7 +22,6 @@ jobs:
         with:
           node-version: 20
       - run: npm install
-      - run: npm run generate:electron:icons
       - run: npm run build:electron
       - uses: actions/upload-artifact@master
         with:
@@ -37,7 +36,6 @@ jobs:
         with:
           node-version: 20
       - run: npm install
-      - run: npm run generate:electron:icons
       - run: npm run build:electron
       - uses: actions/upload-artifact@master
         with:
