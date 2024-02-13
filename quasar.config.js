@@ -258,17 +258,34 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
         appId: 'fr.zkf.kdrive_notes',
+
+        linux: {
+          executableName: 'kdrive-notes',
+          target: [
+            'pacman',
+            'deb',
+            'AppImage',
+            'snap',
+            'rpm',
+            'tar.gz'
+          ],
+          desktop: {
+            Name: 'kDrive Notes',
+            GenericName: 'kDrive Notes',
+            StartupNotify: true,
+            Terminal: false,
+            Type: 'Application',
+            Categories: 'Network;Application',
+          },
+        },
+
+        win: {
+          appId: 'fr.zkf.kdrive_notes',
+          executableName: 'kdrivenotes',
+          target: 'msi',
+          artifactName: 'kdrivenotes',
+        },
       },
-    },
-
-    // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-browser-extensions/configuring-bex
-    bex: {
-      contentScripts: [
-        'my-content-script',
-      ],
-
-      // extendBexScriptsConf (esbuildConf) {}
-      // extendBexManifestJson (json) {}
     },
   }
 })
