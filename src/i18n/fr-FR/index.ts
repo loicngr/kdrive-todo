@@ -13,6 +13,7 @@ export default {
   close: 'Fermer',
   create: 'Créer',
   save: 'Sauvegarder',
+  reset: 'Réinitialiser',
   confirmSave: 'Voulez-vous sauvegarder',
   notingToSave: 'Aucun changement',
   options: 'Options',
@@ -34,6 +35,7 @@ export default {
   tooSmall: 'Trop petit',
 
   title: 'Titre',
+  never: 'Jamais',
   content: 'Contenu',
   id: 'ID',
   add: 'Ajouter',

@@ -2,14 +2,20 @@
   <div
     ref="listRef"
     class="fit row wrap justify-start items-start col-12"
+    :class="{
+      'justify-center': $q.screen.lt.sm,
+    }"
   >
     <q-card
       v-for="(note, loopIndex) in notes"
       :key="note.id"
-      class="col-12 col-md-3 col-sm-4 self-start q-my-sm"
+      class="col-11 col-md-3 col-sm-4 self-start q-my-sm"
       :class="{
-        'q-mx-sm': $q.screen.gt.xs
+        'q-mx-sm': $q.screen.gt.xs,
       }"
+      :style="typeof note.color !== 'undefined'
+        ? 'background:'.concat(note.color)
+        : ''"
       flat
       bordered
     >
@@ -102,8 +108,11 @@
       </div>
 
       <q-card-section
-        class="col-12 row justify-end card-note-buttons"
+        class="col-12 row justify-end"
         horizontal
+        :class="{
+          'card-note-buttons': $q.screen.gt.sm
+        }"
       >
         <q-btn
           unelevated
@@ -128,17 +137,17 @@
         >
           <q-tooltip>
             {{ $t('createdAt') }}: {{ dateTimeFormat(note.createdAt) }} <br>
-            {{ $t('updatedAt') }}: {{ dateTimeFormat(note.createdAt) === dateTimeFormat(note.createdAt)
-              ? 'never'
+            {{ $t('updatedAt') }}: {{ dateTimeFormat(note.createdAt) === dateTimeFormat(note.updatedAt)
+              ? $t('never')
               : dateTimeFormat(note.updatedAt) }}
           </q-tooltip>
         </q-btn>
-        <!--        <q-btn-->
-        <!--          unelevated-->
-        <!--          size="sm"-->
-        <!--          icon="fa fa-ellipsis-vertical"-->
-        <!--          @click="showNoteMenu(note)"-->
-        <!--        />-->
+        <q-btn
+          unelevated
+          size="sm"
+          icon="fa fa-palette"
+          @click="openColorDialog(note)"
+        />
       </q-card-section>
     </q-card>
   </div>
@@ -215,6 +224,8 @@ import SaveButton from 'components/SaveButton.vue'
 import isEqual from 'lodash/fp/isEqual'
 import { dateTimeFormat } from 'src/utils/date'
 import { useI18n } from 'vue-i18n'
+import { keyBy } from 'lodash'
+import DialogColorPicker from 'components/DialogColorPicker.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
 
 const mainStore = useMainStore()
@@ -467,8 +478,21 @@ function onSave () {
     .then(async () => {
       Loading.show()
 
+      const actual = cloneDeep(notes.value)
+      const base = keyBy(cloneDeep(baseNotes.value), 'id')
+      const dateNow = new Date()
+
+      actual.forEach((i) => {
+        if (
+          typeof base[i.id] !== 'undefined' &&
+          !isEqual(i, base[i.id])
+        ) {
+          i.updatedAt = dateNow.toString()
+        }
+      })
+
       const status = await API.writeInFile(JSON.stringify({
-        items: notes.value,
+        items: actual,
       }))
 
       if (status) {
@@ -477,6 +501,14 @@ function onSave () {
 
       Loading.hide()
     })
+}
+
+function openColorDialog (item: Item) {
+  $q.dialog({
+    component: DialogColorPicker,
+  }).onOk((color: Item['color']) => {
+    item.color = color
+  })
 }
 
 async function main () {
@@ -496,7 +528,7 @@ await main()
 
 .card-note-buttons {
   transition: ease-in-out .3s;
-  opacity: 0.2;
+  opacity: 0.3;
 
   &:hover {
     opacity: 1;
