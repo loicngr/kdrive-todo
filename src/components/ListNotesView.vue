@@ -1,5 +1,8 @@
 <template>
-  <div class="fit row wrap justify-start items-start col-12">
+  <div
+    ref="listRef"
+    class="fit row wrap justify-start items-start col-12"
+  >
     <q-card
       v-for="(note, loopIndex) in notes"
       :key="note.id"
@@ -62,6 +65,7 @@
           self="center middle"
           anchor="center middle"
           color="white"
+          persistent
           @show="onPopupShow"
           @hide="onPopupHide"
         >
@@ -101,6 +105,16 @@
         class="col-12 row justify-end card-note-buttons"
         horizontal
       >
+        <q-btn
+          unelevated
+          size="sm"
+          icon="fa fa-grip-vertical"
+          class="handle"
+          style="cursor: grab"
+        />
+
+        <q-space />
+
         <q-btn
           unelevated
           size="sm"
@@ -186,7 +200,6 @@ import {
   QPopupEdit,
   useQuasar,
 } from 'quasar'
-import { useWindowSize } from '@vueuse/core'
 import ItemNotePreviewContent from 'components/ItemNotePreviewContent.vue'
 import ItemNoteTodo from 'components/ItemNoteTodo.vue'
 import { useMainStore } from 'stores/main'
@@ -202,6 +215,7 @@ import SaveButton from 'components/SaveButton.vue'
 import isEqual from 'lodash/fp/isEqual'
 import { dateTimeFormat } from 'src/utils/date'
 import { useI18n } from 'vue-i18n'
+import { useSortable } from '@vueuse/integrations/useSortable'
 
 const mainStore = useMainStore()
 const $q = useQuasar()
@@ -242,11 +256,6 @@ useKeyboardListener({
   },
 })
 
-const {
-  height: windowHeight,
-  width: windowWidth,
-} = useWindowSize()
-
 const API = mainStore.apiOrThrow
 
 const editor = reactive({
@@ -257,32 +266,29 @@ const editor = reactive({
   ],
 })
 
+const listRef = ref<InstanceType<typeof HTMLElement> | null>(null)
 const popup = ref<boolean>(false)
 const notes = ref<Item[]>([])
 const baseNotes = ref<Item[]>([])
 const file = ref<{ items: Item[] }>({
   items: [],
 })
-const popupEditStyle = ref({})
+const popupEditStyle = ref({
+  height: '80vh',
+  minHeight: '1200px',
+})
 const errorNoteTitle = ref({
   status: false,
   message: '',
 })
 
+useSortable(listRef, notes, {
+  handle: '.handle',
+})
+
 const hasDiff = computed(() => {
   return !isEqual(notes.value, baseNotes.value)
 })
-
-function computePopupEditStyle () {
-  popupEditStyle.value = {
-    top: 0,
-    left: 0,
-    width: windowWidth.value.toString().concat('px'),
-    maxWidth: windowWidth.value.toString().concat('px !important'),
-    height: windowHeight.value.toString().concat('px'),
-    maxHeight: windowHeight.value.toString().concat('px !important'),
-  }
-}
 
 function noteTitleValidation (val: string | undefined) {
   if (typeof val !== 'string' || val.length === 0) {
@@ -440,7 +446,6 @@ watch(
 
 function onPopupShow () {
   popup.value = true
-  computePopupEditStyle()
 }
 
 function onPopupHide () {
@@ -475,7 +480,6 @@ function onSave () {
 }
 
 async function main () {
-  computePopupEditStyle()
   await getFileContent()
 }
 
