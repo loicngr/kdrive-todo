@@ -13,6 +13,7 @@ export default {
   close: 'Close',
   create: 'Create',
   save: 'Save',
+  reset: 'Reset',
   confirmSave: 'Do you want save',
   notingToSave: 'No changes',
   options: 'Options',
@@ -34,6 +35,7 @@ export default {
   tooSmall: 'Too small',
 
   title: 'Title',
+  never: 'Never',
   content: 'Content',
   id: 'ID',
   add: 'Add',

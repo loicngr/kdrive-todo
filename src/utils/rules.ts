@@ -2,7 +2,7 @@ import { t } from 'boot/i18n'
 
 export const Rules = {
   required (val: string | undefined) {
-    return typeof val === 'string' || t('required')
+    return typeof (val === 'string' && val.length > 0) || t('required')
   },
 
   validFileNameOrFolder (val: string | undefined) {
@@ -26,5 +26,9 @@ export const Rules = {
 
   validNewString (val: string | undefined) {
     return (val?.length ?? 0) >= 1 || t('tooSmall')
+  },
+
+  validColor (val: string | undefined) {
+    return (val?.length ?? 0) >= 4 || t('notValid')
   },
 }

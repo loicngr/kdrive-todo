@@ -8,4 +8,5 @@ export interface Item {
   updatedAt: string
   status: number
   type: number
+  color: string | undefined
 }
