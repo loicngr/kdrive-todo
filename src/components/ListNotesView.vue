@@ -177,6 +177,7 @@
     </add-button>
 
     <reload-button
+      :last-reload="lastReload"
       @click="getFileContent()"
     >
       <template #tooltip>
@@ -227,8 +228,12 @@ import { useI18n } from 'vue-i18n'
 import { keyBy } from 'lodash'
 import DialogColorPicker from 'components/DialogColorPicker.vue'
 import { useSortable } from '@vueuse/integrations/useSortable'
+import { useSettingsStore } from 'stores/settings'
+import { storeToRefs } from 'pinia'
+import { useIntervalFn } from '@vueuse/core'
 
 const mainStore = useMainStore()
+const settingsStore = useSettingsStore()
 const $q = useQuasar()
 const {
   t,
@@ -280,10 +285,28 @@ const editor = reactive({
 const listRef = ref<InstanceType<typeof HTMLElement> | null>(null)
 const popup = ref<boolean>(false)
 const notes = ref<Item[]>([])
+const lastReload = ref<string | undefined>(undefined)
 const baseNotes = ref<Item[]>([])
 const file = ref<{ items: Item[] }>({
   items: [],
 })
+
+const {
+  autoSyncInterval,
+} = storeToRefs(settingsStore)
+
+const {
+  resume,
+} = useIntervalFn(
+  () => {
+    void getFileContent()
+  },
+  autoSyncInterval.value,
+  {
+    immediate: false,
+  },
+)
+
 const popupEditStyle = ref({
   height: '80vh',
   minHeight: '1200px',
@@ -418,7 +441,18 @@ function createNewText () {
   }
 }
 
-async function getFileContent () {
+function hasConflict (_newNotes: Item[]) {
+  const newNotes = cloneDeep(_newNotes)
+  const currentNotes = cloneDeep(baseNotes.value)
+
+  if (currentNotes.length === 0) {
+    return false
+  }
+
+  return !isEqual(newNotes, currentNotes)
+}
+
+async function getFileContent (checkConflict = true) {
   Loading.show()
 
   try {
@@ -436,8 +470,21 @@ async function getFileContent () {
       return
     }
 
+    if (checkConflict && hasConflict(JSON.parse(textFileContent).items ?? [])) {
+      // TODO (https://github.com/loicngr/kdrive-notes/issues/30)
+
+      Notify.create({
+        message: t('conflictDetected'),
+        type: 'negative',
+      })
+
+      Loading.hide()
+      return
+    }
+
     file.value = JSON.parse(textFileContent)
     baseNotes.value = cloneDeep(file.value.items ?? [])
+    lastReload.value = (new Date()).toString()
   } catch (e) {
     console.error(e)
   }
@@ -482,6 +529,24 @@ function onSave () {
       const base = keyBy(cloneDeep(baseNotes.value), 'id')
       const dateNow = new Date()
 
+      let serverFileContent = await API.getFileContent() as string
+      serverFileContent = serverFileContent.trim()
+
+      if (hasConflict(JSON.parse(serverFileContent).items ?? [])) {
+        Notify.create({
+          message: t('conflictDetected'),
+          type: 'warning',
+        })
+
+        Loading.hide()
+        await dialogConfirm(t('confirmConflictServer'))
+          .catch(() => {
+            throw new Error('Skip save')
+          })
+
+        Loading.show()
+      }
+
       actual.forEach((i) => {
         if (
           typeof base[i.id] !== 'undefined' &&
@@ -496,7 +561,7 @@ function onSave () {
       }))
 
       if (status) {
-        await getFileContent()
+        await getFileContent(false)
       }
 
       Loading.hide()
@@ -513,6 +578,8 @@ function openColorDialog (item: Item) {
 
 async function main () {
   await getFileContent()
+
+  resume()
 }
 
 await main()

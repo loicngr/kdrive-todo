@@ -1,8 +1,9 @@
 import { t } from 'boot/i18n'
+import { DEFAULT_AUTO_SYNC } from 'stores/settings'
 
 export const Rules = {
   required (val: string | undefined) {
-    return typeof (val === 'string' && val.length > 0) || t('required')
+    return !!val || t('required')
   },
 
   validFileNameOrFolder (val: string | undefined) {
@@ -11,6 +12,10 @@ export const Rules = {
 
   validKDriveID (val: string | undefined) {
     return (typeof val === 'string' && /^[0-9]+$/.test(val)) || t('notValidID')
+  },
+
+  validAutoSyncDuration (val: number | undefined) {
+    return (typeof val === 'number' && val >= DEFAULT_AUTO_SYNC) || t('notValidAutoSyncDuration')
   },
 
   validEmail (val: string | undefined) {

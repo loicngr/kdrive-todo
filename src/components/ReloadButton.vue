@@ -19,12 +19,30 @@
         class="absolute"
         style="bottom: -5px; left: -2px;"
       />
+
+      <q-badge
+        v-if="typeof lastReload !== 'undefined'"
+        :label="dateTimeShortFormat(lastReload)"
+        color="white"
+        text-color="primary"
+        class="absolute"
+        style="top: -20px; left: -15px; font-size: 9px;"
+      />
     </template>
   </q-btn>
 </template>
 
 <script setup lang="ts">
+import { dateTimeShortFormat } from 'src/utils/date'
 
+withDefaults(
+  defineProps<{
+    lastReload?: string
+  }>(),
+  {
+    lastReload: undefined,
+  },
+)
 </script>
 
 <style scoped>

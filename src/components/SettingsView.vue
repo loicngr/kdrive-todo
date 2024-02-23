@@ -111,6 +111,32 @@
                 </q-icon>
               </template>
             </hidden-input>
+
+            <q-input
+              v-model.number="autoSync"
+              type="number"
+              :label="`${$t('autoSyncInterval')} *`"
+              :rules="[$rules.required, $rules.validAutoSyncDuration]"
+              lazy-rules
+              class="col-12 col-md-6 error-white"
+              input-class="text-white"
+              filled
+              label-color="white"
+              color="white"
+              step="1"
+              :suffix="$t('minutes').toLowerCase()"
+            >
+              <template #append>
+                <q-icon
+                  name="fa fa-circle-info"
+                  color="white"
+                >
+                  <q-tooltip>
+                    {{ $t('autoSyncIntervalInfo') }}
+                  </q-tooltip>
+                </q-icon>
+              </template>
+            </q-input>
           </q-form>
         </q-card-section>
       </q-card>
@@ -176,6 +202,7 @@
 
 <script setup lang="ts">
 import {
+  DEFAULT_AUTO_SYNC,
   type DEFAULT_WEBDAV_STATE,
   useSettingsStore,
 } from 'stores/settings'
@@ -185,8 +212,10 @@ import {
   ref,
 } from 'vue'
 import {
-  Notify, openURL,
-  QForm, useQuasar,
+  Notify,
+  openURL,
+  QForm,
+  useQuasar,
 } from 'quasar'
 import { storeToRefs } from 'pinia'
 import cloneDeep from 'lodash/fp/cloneDeep'
@@ -205,10 +234,12 @@ const {
 const {
   webdav,
   language: storeLanguage,
+  autoSync: storeAutoSync,
 } = storeToRefs(settingsStore)
 
 const webDAV = ref<typeof DEFAULT_WEBDAV_STATE>(cloneDeep(webdav.value))
 const language = ref<string>(cloneDeep(storeLanguage.value))
+const autoSync = ref<number>(cloneDeep(storeAutoSync.value))
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
 
@@ -238,6 +269,12 @@ async function onSubmit () {
 
   webdav.value = cloneDeep(webDAV.value)
   storeLanguage.value = cloneDeep(language.value)
+
+  if (autoSync.value < DEFAULT_AUTO_SYNC) {
+    autoSync.value = cloneDeep(DEFAULT_AUTO_SYNC)
+  }
+
+  storeAutoSync.value = cloneDeep(autoSync.value)
 
   void nextTick(() => {
     Notify.create({
@@ -274,6 +311,7 @@ function testGooglePlayConsole () {
 onBeforeMount(async () => {
   webDAV.value = cloneDeep(webdav.value)
   language.value = cloneDeep(storeLanguage.value)
+  autoSync.value = cloneDeep(storeAutoSync.value)
 })
 </script>
 
