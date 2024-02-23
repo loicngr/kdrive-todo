@@ -16,9 +16,12 @@ export const DEFAULT_WEBDAV_STATE: {
   customServer: undefined,
 }
 
+export const DEFAULT_AUTO_SYNC: number = 5
+
 export interface State {
   webdav: typeof DEFAULT_WEBDAV_STATE
   language: string,
+  autoSync: number,
 }
 
 export const useSettingsStore = defineStore({
@@ -27,9 +30,14 @@ export const useSettingsStore = defineStore({
   state: (): State => ({
     webdav: cloneDeep(DEFAULT_WEBDAV_STATE),
     language: 'en-US',
+    autoSync: cloneDeep(DEFAULT_AUTO_SYNC),
   }),
 
   getters: {
+    autoSyncInterval (): number {
+      return this.autoSync * 60 * 1000
+    },
+
     isWebDAVValid (): boolean {
       const webDAV = this.webdav ?? {}
 
@@ -53,6 +61,7 @@ export const useSettingsStore = defineStore({
         paths: [
           'webdav',
           'language',
+          'autoSync',
         ],
       },
     ],
