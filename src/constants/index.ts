@@ -2,6 +2,7 @@ import { type Todo } from 'src/interfaces/todo'
 import { type Item } from 'src/interfaces/item'
 import { version } from '../../package.json'
 import { type NotesFile } from 'src/interfaces/file'
+import { Tag } from 'src/interfaces/tag'
 
 export const DEFAULT_FOLDER = 'WebDAVJS'
 
@@ -35,4 +36,10 @@ export const DEFAULT_NOTE: Item = {
 export const DEFAULT_FILE: NotesFile = {
   items: [],
   version,
+}
+
+export const DEFAULT_TAG: Tag = {
+  id: '',
+  name: '',
+  color: undefined,
 }

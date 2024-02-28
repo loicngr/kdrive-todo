@@ -5,6 +5,7 @@ import {
 } from 'webdav'
 import { WebDAVApi } from 'src/utils/webdav'
 import { useSettingsStore } from 'stores/settings'
+import cloneDeep from 'lodash/fp/cloneDeep'
 
 interface State {
   ready: boolean
@@ -14,6 +15,9 @@ interface State {
   firstLaunch: boolean
 }
 
+export const WEBDAV_SETTINGS_PATH = '/settings.json'
+export const WEBDAV_NOTES_PATH = '/notes.json'
+
 export const useMainStore = defineStore({
   id: 'main',
 
@@ -21,7 +25,7 @@ export const useMainStore = defineStore({
     firstLaunch: true,
     ready: false,
     client: undefined,
-    filePath: '/notes.json',
+    filePath: cloneDeep(WEBDAV_NOTES_PATH),
     api: undefined,
   }),
 

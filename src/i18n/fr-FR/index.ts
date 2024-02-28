@@ -20,6 +20,8 @@ export default {
   options: 'Options',
   selectNewFileType: 'Sélectionner le type du fichier',
   filename: 'Nom du fichier',
+  name: 'Nom',
+  color: 'Couleur',
   fileEmptyOrInvalid: `Le fichier est vide ou le format n'est pas valide`,
   conflictDetected: `Conflit avec les notes du serveur détecté`,
 
@@ -75,4 +77,8 @@ export default {
   dialogRedirectErrorSettingsFirstTime: 'Bienvenue, veuillez remplir les champs demandés',
   dialogRedirectError: `Le fichier "notes.json" n'existe pas dans votre kDrive.<br> Toutes vos notes seront sauvegardées dans ce fichier.<br>Voulez-vous le créer ?`,
   dialogRedirectErrorFolder: `Le dossier "{dir}" n'existe pas dans votre kDrive.<br> Toutes vos notes seront sauvegardées dans ce dossier.<br>Voulez-vous le créer ?`,
+  tags: `Étiquettes`,
+  tagsTooltip: `Vous pouvez gérer ici vos étiquettes de fichiers`,
+  areYouSureToDelete: `Êtes-vous sûr de vouloir supprimer cet élément ?`,
+  tagsNotConnected: `Vous devez être connecté pour gérer vos étiquettes`,
 }

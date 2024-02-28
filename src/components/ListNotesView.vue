@@ -108,6 +108,18 @@
       </div>
 
       <q-card-section
+        class="q-py-none q-px-xs q-pb-xs"
+      >
+        <q-chip
+          label="Tag"
+          clickable
+          size="sm"
+          color="secondary"
+          text-color="primary"
+        />
+      </q-card-section>
+
+      <q-card-section
         class="col-12 row justify-end"
         horizontal
         :class="{
@@ -231,6 +243,7 @@ import { useSortable } from '@vueuse/integrations/useSortable'
 import { useSettingsStore } from 'stores/settings'
 import { storeToRefs } from 'pinia'
 import { useIntervalFn } from '@vueuse/core'
+import { Tag } from 'src/interfaces/tag'
 
 const mainStore = useMainStore()
 const settingsStore = useSettingsStore()
@@ -287,6 +300,7 @@ const popup = ref<boolean>(false)
 const notes = ref<Item[]>([])
 const lastReload = ref<string | undefined>(undefined)
 const baseNotes = ref<Item[]>([])
+const tags = ref<Tag[]>([])
 const file = ref<{ items: Item[] }>({
   items: [],
 })
@@ -300,6 +314,7 @@ const {
 } = useIntervalFn(
   () => {
     void getFileContent()
+    void getTags()
   },
   autoSyncInterval.value,
   {
@@ -452,6 +467,10 @@ function hasConflict (_newNotes: Item[]) {
   return !isEqual(newNotes, currentNotes)
 }
 
+async function getTags () {
+  tags.value = (await settingsStore.getTags()) ?? []
+}
+
 async function getFileContent (checkConflict = true) {
   Loading.show()
 
@@ -578,6 +597,7 @@ function openColorDialog (item: Item) {
 
 async function main () {
   await getFileContent()
+  await getTags()
 
   resume()
 }
