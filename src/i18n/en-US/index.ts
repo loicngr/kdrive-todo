@@ -20,6 +20,8 @@ export default {
   options: 'Options',
   selectNewFileType: 'Select new file type',
   filename: 'Filename',
+  name: 'Name',
+  color: 'Color',
   fileEmptyOrInvalid: 'File is empty, or format is invalid',
   conflictDetected: 'Conflict with server notes detected',
 
@@ -79,4 +81,10 @@ export default {
   dialogRedirectErrorFolder: `The folder "{dir}" doesn't exist in your kDrive.<br>
     All your notes will be saved in this folder.<br>
     Would you like to create it?`,
+  tags: `Tags`,
+  tagsTooltip: `Here you can manage your file tags`,
+  areYouSureToDelete: `Are you sure you want to remove this element?`,
+  tagsNotConnected: `You must be logged in to manage your tags`,
+  selectTag: `Select tag`,
+  clear: `Clear`,
 }

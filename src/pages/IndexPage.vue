@@ -41,7 +41,9 @@
 </template>
 
 <script lang="ts" setup>
-import { useMainStore } from 'stores/main'
+import {
+  useMainStore, WEBDAV_NOTES_PATH,
+} from 'stores/main'
 import { storeToRefs } from 'pinia'
 import {
   Loading,
@@ -53,6 +55,7 @@ import ListNotesView from 'components/ListNotesView.vue'
 import { useSettingsStore } from 'stores/settings'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import cloneDeep from 'lodash/fp/cloneDeep'
 
 const router = useRouter()
 const mainStore = useMainStore()
@@ -131,6 +134,7 @@ async function dialogRedirectErrorSettings () {
 
 async function reload () {
   Loading.show()
+  mainStore.filePath = cloneDeep(WEBDAV_NOTES_PATH)
   await mainStore.connect()
   Loading.hide()
 

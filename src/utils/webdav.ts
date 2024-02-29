@@ -125,11 +125,15 @@ export class WebDAVApi {
     return await this.client.exists(path)
   }
 
-  async writeInFile (content: string): Promise<boolean> {
+  async writeInFile (
+    content: string,
+    path?: string,
+  ): Promise<boolean> {
     const mainStore = useMainStore()
+    path ??= mainStore.filePath
 
     try {
-      return await this.client.putFileContents(mainStore.filePath, content)
+      return await this.client.putFileContents(path, content)
     } catch (e) {
       return false
     }
@@ -166,10 +170,12 @@ export class WebDAVApi {
 
   async getFileContent (
     format: GetFileContentsOptions['format'] = 'text',
+    path?: string,
   ) {
     const mainStore = useMainStore()
+    path ??= mainStore.filePath
 
-    return await this.client.getFileContents(mainStore.filePath, {
+    return await this.client.getFileContents(path, {
       format,
     })
   }

@@ -137,6 +137,11 @@
                 </q-icon>
               </template>
             </q-input>
+
+            <tags-card
+              ref="tagsCardRef"
+              v-model="tags"
+            />
           </q-form>
         </q-card-section>
       </q-card>
@@ -224,6 +229,8 @@ import SaveButton from 'components/SaveButton.vue'
 import HiddenInput from 'components/HiddenInput.vue'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from 'components/languageSwitcher.vue'
+import { Tag } from 'src/interfaces/tag'
+import TagsCard from 'components/TagsCard.vue'
 
 const settingsStore = useSettingsStore()
 const $q = useQuasar()
@@ -240,8 +247,10 @@ const {
 const webDAV = ref<typeof DEFAULT_WEBDAV_STATE>(cloneDeep(webdav.value))
 const language = ref<string>(cloneDeep(storeLanguage.value))
 const autoSync = ref<number>(cloneDeep(storeAutoSync.value))
+const tags = ref<Tag[]>()
 
 const formRef = ref<InstanceType<typeof QForm> | null>(null)
+const tagsCardRef = ref<InstanceType<typeof TagsCard> | null>(null)
 
 useKeyboardListener({
   'Control-s': {
@@ -276,6 +285,12 @@ async function onSubmit () {
 
   storeAutoSync.value = cloneDeep(autoSync.value)
 
+  if (typeof tags.value !== 'undefined') {
+    await settingsStore.saveFile({
+      tags: tags.value ?? [],
+    })
+  }
+
   void nextTick(() => {
     Notify.create({
       message: t('settingsSave'),
@@ -284,6 +299,8 @@ async function onSubmit () {
       timeout: 2000,
     })
   })
+
+  await tagsCardRef.value?.init()
 }
 
 function testGooglePlayConsole () {
