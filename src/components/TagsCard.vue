@@ -78,6 +78,18 @@
                         <q-color
                           v-model.trim="tag.color"
                           default-view="palette"
+                          no-footer
+                          :palette="[
+                            '#0da1a4',
+                            '#cbaf13',
+                            '#cc0b54',
+                            '#ad1189',
+                            '#350d56',
+                            '#25790f',
+                            '#542513',
+                            '#81736e',
+                            '#000000',
+                          ]"
                         />
                       </q-popup-proxy>
                     </q-icon>

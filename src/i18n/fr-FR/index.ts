@@ -81,4 +81,6 @@ export default {
   tagsTooltip: `Vous pouvez gérer ici vos étiquettes de fichiers`,
   areYouSureToDelete: `Êtes-vous sûr de vouloir supprimer cet élément ?`,
   tagsNotConnected: `Vous devez être connecté pour gérer vos étiquettes`,
+  selectTag: `Choisissez une étiquette`,
+  clear: `Effacer`,
 }

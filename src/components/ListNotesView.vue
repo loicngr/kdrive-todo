@@ -7,7 +7,7 @@
     }"
   >
     <q-card
-      v-for="(note, loopIndex) in notes"
+      v-for="(note, loopIndex) in filteredNotes ?? notes"
       :key="note.id"
       class="col-11 col-md-3 col-sm-4 self-start q-my-sm"
       :class="{
@@ -111,11 +111,14 @@
         class="q-py-none q-px-xs q-pb-xs"
       >
         <q-chip
-          label="Tag"
+          v-for="tag in note.tags"
+          :key="tag.id"
           clickable
+          :label="tag.name"
           size="sm"
-          color="secondary"
-          text-color="primary"
+          :style="'background:'.concat(tag.color ?? 'white')"
+          removable
+          @remove="removeNoteTag(note, tag)"
         />
       </q-card-section>
 
@@ -132,9 +135,26 @@
           icon="fa fa-grip-vertical"
           class="handle"
           style="cursor: grab"
+          :disable="typeof filteredNotes !== 'undefined'"
         />
 
         <q-space />
+
+        <q-select
+          v-model="note.tags"
+          multiple
+          option-label="name"
+          hide-bottom-space
+          hide-selected
+          dense
+          borderless
+          :options="tags"
+          dropdown-icon="fa fa-tag"
+          class="q-pl-sm q-pr-md p-ma-none hover-lighten note-tags-select"
+          :behavior="$q.screen.lt.md
+            ? 'dialog'
+            : 'default'"
+        />
 
         <q-btn
           unelevated
@@ -142,6 +162,7 @@
           icon="fa fa-close"
           @click="onDeleteNote(note)"
         />
+
         <q-btn
           unelevated
           size="sm"
@@ -154,6 +175,7 @@
               : dateTimeFormat(note.updatedAt) }}
           </q-tooltip>
         </q-btn>
+
         <q-btn
           unelevated
           size="sm"
@@ -168,6 +190,13 @@
     position="bottom-right"
     :offset="[18, 18]"
   >
+    <filter-button
+      class="q-mr-md"
+      :can-clear="typeof filteredNotes !== 'undefined'"
+      @click="onFilter"
+      @clear="filteredNotes = undefined"
+    />
+
     <save-button
       v-if="hasDiff"
       class="q-mr-md"
@@ -244,6 +273,8 @@ import { useSettingsStore } from 'stores/settings'
 import { storeToRefs } from 'pinia'
 import { useIntervalFn } from '@vueuse/core'
 import { Tag } from 'src/interfaces/tag'
+import FilterButton from 'components/FilterButton.vue'
+import DialogFilter from 'components/DialogFilter.vue'
 
 const mainStore = useMainStore()
 const settingsStore = useSettingsStore()
@@ -283,6 +314,16 @@ useKeyboardListener({
       onSave()
     },
   },
+  'Control-f': {
+    callback: (e: KeyboardEvent) => {
+      if (popup.value) {
+        return
+      }
+
+      e.preventDefault()
+      onFilter()
+    },
+  },
 })
 
 const API = mainStore.apiOrThrow
@@ -297,6 +338,7 @@ const editor = reactive({
 
 const listRef = ref<InstanceType<typeof HTMLElement> | null>(null)
 const popup = ref<boolean>(false)
+const filteredNotes = ref<Item[] | undefined>(undefined)
 const notes = ref<Item[]>([])
 const lastReload = ref<string | undefined>(undefined)
 const baseNotes = ref<Item[]>([])
@@ -313,7 +355,10 @@ const {
   resume,
 } = useIntervalFn(
   () => {
-    void getFileContent()
+    if (hasDiff.value) {
+      void getFileContent()
+    }
+
     void getTags()
   },
   autoSyncInterval.value,
@@ -360,9 +405,9 @@ function onNoteTitleHide (
   }
 }
 
-// function showNoteMenu (note: Item) {
-//   console.log('TODO', note)
-// }
+function removeNoteTag (note: Item, tag: Tag) {
+  note.tags = note.tags.filter(t => t.id !== tag.id)
+}
 
 function onDeleteNote (note: Item) {
   void dialogConfirm('Delete this note ?')
@@ -491,7 +536,6 @@ async function getFileContent (checkConflict = true) {
 
     if (checkConflict && hasConflict(JSON.parse(textFileContent).items ?? [])) {
       // TODO (https://github.com/loicngr/kdrive-notes/issues/30)
-
       Notify.create({
         message: t('conflictDetected'),
         type: 'negative',
@@ -585,6 +629,29 @@ function onSave () {
 
       Loading.hide()
     })
+}
+
+function onFilter () {
+  $q.dialog({
+    component: DialogFilter,
+    componentProps: {
+      tags: tags.value,
+    },
+  }).onOk((tag?: Tag) => {
+    if (typeof tag === 'undefined') {
+      filteredNotes.value = undefined
+      return
+    }
+
+    filteredNotes.value = notes.value.filter((n) => n.tags?.find(t => t.id === tag.id))
+
+    if (
+      typeof filteredNotes.value !== 'undefined' &&
+      filteredNotes.value.length === 0
+    ) {
+      filteredNotes.value = undefined
+    }
+  })
 }
 
 function openColorDialog (item: Item) {

@@ -31,6 +31,7 @@ export const DEFAULT_NOTE: Item = {
   status: ITEM_STATUS_DEFAULT,
   type: ITEM_TYPE_NOTE,
   color: undefined,
+  tags: [],
 }
 
 export const DEFAULT_FILE: NotesFile = {

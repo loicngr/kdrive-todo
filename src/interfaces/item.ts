@@ -1,4 +1,5 @@
 import type { Todo } from 'src/interfaces/todo'
+import { Tag } from 'src/interfaces/tag'
 
 export interface Item {
   id: string
@@ -9,4 +10,5 @@ export interface Item {
   status: number
   type: number
   color: string | undefined
+  tags: Tag[]
 }

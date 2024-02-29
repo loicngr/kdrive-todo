@@ -27,12 +27,12 @@ export const DEFAULT_TAGS: Tag[] = [
   {
     id: '-1',
     name: 'important',
-    color: '#c62828',
+    color: '#cc0b54',
   },
   {
     id: '-2',
     name: 'warning',
-    color: '#ffeb3b',
+    color: '#cbaf13',
   },
 ]
 

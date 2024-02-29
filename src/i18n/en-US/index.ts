@@ -85,4 +85,6 @@ export default {
   tagsTooltip: `Here you can manage your file tags`,
   areYouSureToDelete: `Are you sure you want to remove this element?`,
   tagsNotConnected: `You must be logged in to manage your tags`,
+  selectTag: `Select tag`,
+  clear: `Clear`,
 }
