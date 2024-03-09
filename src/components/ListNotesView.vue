@@ -464,7 +464,7 @@ function createNewTodo () {
       items: currentNotes,
     }))
       .then(() => {
-        void getFileContent()
+        void getFileContent(false)
       })
       .finally(() => {
         Loading.hide()
@@ -490,7 +490,7 @@ function createNewText () {
       items: currentNotes,
     }))
       .then(() => {
-        void getFileContent()
+        void getFileContent(false)
       })
       .finally(() => {
         Loading.hide()
