@@ -33,5 +33,5 @@ export function dateTimeFormat (d: string) {
 }
 
 export function dateTimeShortFormat (d: string) {
-  return formatDate(parseIso(d), 'YYYY/MM/DD HH:mm')
+  return formatDate(parseIso(d), 'MM/DD HH:mm')
 }

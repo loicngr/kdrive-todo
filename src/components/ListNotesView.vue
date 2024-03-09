@@ -5,11 +5,12 @@
     :class="{
       'justify-center': $q.screen.lt.sm,
     }"
+    style="margin-bottom: 60px;"
   >
     <q-card
       v-for="(note, loopIndex) in filteredNotes ?? notes"
       :key="note.id"
-      class="col-11 col-md-3 col-sm-4 self-start q-my-sm"
+      class="col-11 col-md-3 col-sm-5 self-start q-my-sm"
       :class="{
         'q-mx-sm': $q.screen.gt.xs,
       }"
@@ -96,7 +97,7 @@
                 v-model="scopePopupEdit.value"
                 autofocus
                 :placeholder="$t('content')"
-                height="80vh"
+                height="70vh"
                 max-height="1200px"
                 :toolbar="editor.toolbar"
                 :fonts="{
@@ -345,7 +346,9 @@ const editor = reactive({
     ['hr', 'link', 'fullscreen'],
     [
       {
-        label: $q.lang.editor.formatting,
+        label: $q.screen.gt.xs
+          ? $q.lang.editor.formatting
+          : '',
         icon: $q.iconSet.editor.formatting,
         list: 'no-icons',
         options: [
@@ -360,7 +363,9 @@ const editor = reactive({
         ],
       },
       {
-        label: $q.lang.editor.fontSize,
+        label: $q.screen.gt.xs
+          ? $q.lang.editor.fontSize
+          : '',
         icon: $q.iconSet.editor.fontSize,
         fixedLabel: true,
         fixedIcon: true,
@@ -376,7 +381,9 @@ const editor = reactive({
         ],
       },
       {
-        label: $q.lang.editor.defaultFont,
+        label: $q.screen.gt.xs
+          ? $q.lang.editor.defaultFont
+          : '',
         icon: $q.iconSet.editor.font,
         fixedIcon: true,
         list: 'no-icons',
