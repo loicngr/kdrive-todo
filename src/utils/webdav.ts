@@ -13,6 +13,12 @@ import { DEFAULT_FILE } from 'src/constants'
 import { useSettingsStore } from 'stores/settings'
 import { t } from 'boot/i18n'
 
+export const HEADERS = {
+  'Cache-Control': 'no-cache, no-store, must-revalidate',
+  Pragma: 'no-cache',
+  Expires: '0',
+}
+
 export class WebDAVApi {
   // eslint-disable-next-line no-useless-constructor
   constructor (
@@ -133,7 +139,9 @@ export class WebDAVApi {
     path ??= mainStore.filePath
 
     try {
-      return await this.client.putFileContents(path, content)
+      return await this.client.putFileContents(path, content, {
+        headers: HEADERS,
+      })
     } catch (e) {
       return false
     }
@@ -159,7 +167,9 @@ export class WebDAVApi {
         return
       }
 
-      await this.client.createDirectory(dir)
+      await this.client.createDirectory(dir, {
+        headers: HEADERS,
+      })
     } catch (e) {
       Notify.create({
         message: (e ?? t('dirNotCreated')) as string,
@@ -177,6 +187,7 @@ export class WebDAVApi {
 
     return await this.client.getFileContents(path, {
       format,
+      headers: HEADERS,
     })
   }
 
